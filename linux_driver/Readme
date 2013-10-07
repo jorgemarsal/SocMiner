@@ -1,0 +1,11 @@
+git clone git@github.com:Xilinx/linux-xlnx.git
+git checkout tags/<tag>
+#on the linux kernel directory
+ make ARCH=arm CC=arm-xilinx-linux-gnueabi-gcc CROSS_COMPILE=arm-xilinx-linux-gnueabi- xilinx_zynq_defconfig
+ make ARCH=arm CC=arm-xilinx-linux-gnueabi-gcc CROSS_COMPILE=arm-xilinx-linux-gnueabi- uImage
+
+
+mknod /dev/fifo-dma0 c 60 0
+dd if=/dev/urandom bs=1024 count=1 of=/dev/fifo-dma0
+
+make ARCH=arm CC=arm-xilinx-linux-gnueabi-gcc CROSS_COMPILE=arm-xilinx-linux-gnueabi-
