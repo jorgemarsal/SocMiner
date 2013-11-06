@@ -8,7 +8,9 @@
  */
 
 
-//`default_nettype none
+//synthesis translate_off
+`default_nettype none
+//synthesis translate_on
 module auto_clear #(parameter WIDTH=1)
 (
     input logic Clk, 
@@ -34,4 +36,5 @@ module auto_clear #(parameter WIDTH=1)
     endgenerate
 
 endmodule
-//`default_nettype wire
+
+`default_nettype wire

@@ -1,0 +1,6 @@
+$ cd ../../linux_xlnx
+$ git clone git@github.com:Xilinx/linux-xlnx.git
+$ git checkout xilinx-v14.5-15-gabc285b
+$ make CROSS_COMPILE=arm-xilinx-linux-gnueabi- ARCH=arm xilinx_zynq_defconfig
+$ make CROSS_COMPILE=arm-xilinx-linux-gnueabi- ARCH=arm uImage
+

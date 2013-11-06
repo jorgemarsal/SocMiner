@@ -1,9 +1,7 @@
 # Cross compiler makefile for FIFO DMA example
-KERN_SRC=../../linux-xlnx/
+KERN_SRC=../../../linux-xlnx/
 #obj-m := xfifo_dma.o
-#obj-m := hello.o
-obj-m := soc.o
-soc-y := soc_miner.o soc_miner_ioctl.o
+obj-m := hello.o
 
 #ARCH=arm
 all:

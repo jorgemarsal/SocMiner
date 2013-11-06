@@ -1,0 +1,401 @@
+<!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpj.dtd">
+<Project
+    Version="10.0"
+    VendorName="SlickEdit"
+    TemplateName="Verilog: Model Technology ModelSim"
+    WorkingDir=".">
+    <Config
+        Name="Release"
+        OutputFile=""
+        CompilerConfigName="">
+        <Includes>
+            <Include Dir="%(INCLUDE)"/>
+        </Includes>
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine="vlog %p%n%e"/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine="nmake"/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine="nmake /A"/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine="vsim"/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine="vsim"/>
+            </Target>
+        </Menu>
+    </Config>
+    <CustomFolders>
+        <Folder
+            Name="Source Files"
+            Filters="*.v;*.verilog">
+        </Folder>
+        <Folder
+            Name="Other Files"
+            Filters="">
+        </Folder>
+    </CustomFolders>
+    <Files AutoFolders="DirectoryView">
+        <Folder Name="rtl">
+            <F N="rtl/auto_clear.sv"/>
+            <F N="rtl/axi4_if.sv"/>
+            <F N="rtl/axi4lite2regbus.sv"/>
+            <F N="rtl/axi4lite_if.sv"/>
+            <F N="rtl/regbus2axi4lite.sv"/>
+            <F N="rtl/regbus_if.sv"/>
+            <F N="rtl/soc_miner.sv"/>
+            <F N="rtl/soc_miner_regs.v"/>
+            <F N="rtl/soc_miner_wrapper.v"/>
+        </Folder>
+        <Folder Name="../syn">
+            <Folder Name="soc_miner_io">
+                <Folder Name="soc_miner_io.srcs">
+                    <Folder Name="sources_1">
+                        <Folder Name="bd">
+                            <Folder Name="soc_miner_io">
+                                <Folder Name="hdl">
+                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/hdl/soc_miner_io.v"/>
+                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/hdl/soc_miner_io_wrapper.v"/>
+                                </Folder>
+                                <Folder Name="ip">
+                                    <Folder Name="soc_miner_io_axi_interconnect_0_0">
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_axi_interconnect_0_0/soc_miner_io_axi_interconnect_0_0.xci"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_axi_interconnect_0_0/soc_miner_io_axi_interconnect_0_0.xml"/>
+                                    </Folder>
+                                    <Folder Name="soc_miner_io_axi_interconnect_1_1">
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_axi_interconnect_1_1/soc_miner_io_axi_interconnect_1_1.xci"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_axi_interconnect_1_1/soc_miner_io_axi_interconnect_1_1.xml"/>
+                                    </Folder>
+                                    <Folder Name="soc_miner_io_processing_system7_0_0">
+                                        <Folder Name="data">
+                                            <Folder Name="zynqconfig">
+                                                <Folder Name="1.0">
+                                                    <Folder Name="code">
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/1.0/code/clkgen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/1.0/code/ddrgen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/1.0/code/miogen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/1.0/code/peripheralsgen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/1.0/code/pllgen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/1.0/code/powergen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/1.0/code/ps7_post_config.xml"/>
+                                                    </Folder>
+                                                    <Folder Name="ps7regs">
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/1.0/ps7regs/sw_param.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/1.0/ps7regs/sw_regs.xml"/>
+                                                    </Folder>
+                                                </Folder>
+                                                <Folder Name="2.0">
+                                                    <Folder Name="code">
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/2.0/code/clkgen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/2.0/code/ddrgen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/2.0/code/miogen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/2.0/code/peripheralsgen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/2.0/code/pllgen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/2.0/code/powergen.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/2.0/code/ps7_post_config.xml"/>
+                                                    </Folder>
+                                                    <Folder Name="ps7regs">
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/2.0/ps7regs/sw_param.xml"/>
+                                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/2.0/ps7regs/sw_regs.xml"/>
+                                                    </Folder>
+                                                </Folder>
+                                                <Folder Name="board">
+                                                    <F
+                                                        N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/board/ZedBoard.xml"
+                                                        Type="Ant"/>
+                                                    <F
+                                                        N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/board/xc7z020.xml"
+                                                        Type="Ant"/>
+                                                    <F
+                                                        N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/board/xc7z706.xml"
+                                                        Type="Ant"/>
+                                                </Folder>
+                                                <Folder Name="can">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/can/can0_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/can/can0_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/can/can1_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/can/can1_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="code">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/clkgen.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/codegen.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/ddrgen.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/ddrgen.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/miogen.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/peripheralsgen.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/peripheralsgen.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/pllgen.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/powergen.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/ps7_init.c"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/ps7_init.h"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/ps7_init.tcl"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/ps7_post_config.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/sdkgen.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/ucfgen.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/code/ucfgen.xml.orig"/>
+                                                </Folder>
+                                                <Folder Name="ddr">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ddr/ddr_iostandards.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ddr/ddr_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ddr/ddr_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ddr/ddr_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ddr/ddr_preset.xml.orig"/>
+                                                </Folder>
+                                                <Folder Name="enet">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/enet/enet0_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/enet/enet0_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/enet/enet0_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/enet/enet0_preset.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/enet/enet1_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/enet/enet1_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/enet/enet1_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/enet/enet1_preset.xml.orig"/>
+                                                </Folder>
+                                                <Folder Name="global">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/global/global_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/global/global_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/global/global_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/global/global_preset.xml.orig"/>
+                                                </Folder>
+                                                <Folder Name="gpio">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/gpio/gpio_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/gpio/gpio_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/gpio/gpio_preset.xml.orig"/>
+                                                </Folder>
+                                                <Folder Name="guidata">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/MIOData.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/guidata.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/mio.svg"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nand_t_ar.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nand_t_clr.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nand_t_rc.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nand_t_rea.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nand_t_rr.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nand_t_wc.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nand_t_wp.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nor_t_ceoe.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nor_t_pc.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nor_t_rc.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nor_t_tr.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nor_t_wc.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nor_t_wp.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/nor_we_time.png"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/zynq.svg"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/guidata/zynq_100x30.png"/>
+                                                </Folder>
+                                                <Folder Name="html">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/html/ps_summary.css"/>
+                                                </Folder>
+                                                <Folder Name="i2c">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/i2c/i2c0_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/i2c/i2c0_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/i2c/i2c0_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/i2c/i2c0_preset.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/i2c/i2c1_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/i2c/i2c1_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/i2c/i2c1_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/i2c/i2c1_preset.xml.orig"/>
+                                                </Folder>
+                                                <Folder Name="mio">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/mio/mio_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/mio/mio_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="mpd">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/mpd/hw_param.xml"/>
+                                                </Folder>
+                                                <Folder Name="nand">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/nand/nand_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/nand/nand_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/nand/nand_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/nand/nand_preset.xml.orig"/>
+                                                </Folder>
+                                                <Folder Name="nor">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/nor/nor_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/nor/nor_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/nor/nor_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="part">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/part/package_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/part/package_preset.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/part/partno_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/part/partno_preset.xml.orig"/>
+                                                </Folder>
+                                                <Folder Name="pjtag">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/pjtag/pjtag_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/pjtag/pjtag_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="ps7regs">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ps7regs/sw_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ps7regs/sw_regs.xml"/>
+                                                </Folder>
+                                                <Folder Name="qspi">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/qspi/qspi_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/qspi/qspi_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="sd">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/sd/sd0_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/sd/sd0_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/sd/sd1_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/sd/sd1_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/sd/sdio_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/sd/sdio_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="spi">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/spi/spi0_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/spi/spi0_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/spi/spi1_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/spi/spi1_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="trace">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/trace/trace_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/trace/trace_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="ttc">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ttc/ttc0_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ttc/ttc0_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ttc/ttc1_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ttc/ttc1_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="uart">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/uart/uart0_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/uart/uart0_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/uart/uart1_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/uart/uart1_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/uart/uart_hw_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/uart/uart_io_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/uart/uart_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/uart/uart_ui_param.xml"/>
+                                                </Folder>
+                                                <Folder Name="ui">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ui/param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ui/preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ui/ui_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/ui/ui_preset.xml"/>
+                                                </Folder>
+                                                <Folder Name="usb">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/usb/usb0_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/usb/usb0_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/usb/usb0_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/usb/usb0_preset.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/usb/usb1_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/usb/usb1_param.xml.orig"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/usb/usb1_preset.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/usb/usb1_preset.xml.orig"/>
+                                                </Folder>
+                                                <Folder Name="wdt">
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/wdt/wdt_param.xml"/>
+                                                    <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/wdt/wdt_preset.xml"/>
+                                                </Folder>
+                                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/vivado_dataxml.pl"/>
+                                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/data/zynqconfig/xpsmaps.xml"/>
+                                            </Folder>
+                                        </Folder>
+                                        <Folder Name="hdl">
+                                            <Folder Name="verilog">
+                                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/verilog/processing_system7_v5_3_atc.v"/>
+                                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/verilog/processing_system7_v5_3_aw_atc.v"/>
+                                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/verilog/processing_system7_v5_3_b_atc.v"/>
+                                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/verilog/processing_system7_v5_3_processing_system7.v"/>
+                                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/verilog/processing_system7_v5_3_trace_buffer.v"/>
+                                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/verilog/processing_system7_v5_3_w_atc.v"/>
+                                            </Folder>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_afi_slave.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_apis.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_arb_hp0_1.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_arb_hp2_3.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_arb_rd.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_arb_rd_4.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_arb_wr.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_arb_wr_4.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_axi_acp.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_axi_gp.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_axi_hp.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_axi_master.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_axi_slave.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_ddrc.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_fmsw_gp.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_gen_clock.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_gen_reset.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_interconnect_model.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_intr_rd_mem.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_intr_wr_mem.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_local_params.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_ocm_mem.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_ocmc.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_processing_system7_bfm.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_reg_init.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_reg_map.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_reg_params.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_regc.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_sparse_mem.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_ssw_hp.v"/>
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hdl/processing_system7_bfm_v2_0_unused_ports.v"/>
+                                        </Folder>
+                                        <Folder Name="sim">
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/sim/soc_miner_io_processing_system7_0_0.v"/>
+                                        </Folder>
+                                        <Folder Name="synth">
+                                            <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/synth/soc_miner_io_processing_system7_0_0.v"/>
+                                        </Folder>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/component.xml"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/fixedio.xml"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/fixedio_rtl.xml"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hpstatusctrl.xml"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/hpstatusctrl_rtl.xml"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/ps_clock_registers.log"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/soc_miner_io_processing_system7_0_0.veo"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/soc_miner_io_processing_system7_0_0.xci"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/soc_miner_io_processing_system7_0_0.xdc"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/soc_miner_io_processing_system7_0_0.xml"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/usbctrl.xml"/>
+                                        <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/ip/soc_miner_io_processing_system7_0_0/usbctrl_rtl.xml"/>
+                                    </Folder>
+                                </Folder>
+                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/soc_miner_io.bd"/>
+                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/soc_miner_io.bxml"/>
+                                <F N="../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_io/soc_miner_io_ooc.xdc"/>
+                            </Folder>
+                        </Folder>
+                    </Folder>
+                </Folder>
+            </Folder>
+        </Folder>
+        <Folder Name="tb">
+            <F
+                N="tb/Makefile"
+                Type="Makefile"/>
+            <F
+                N="tb/Makefile.system"
+                Type="Makefile"/>
+            <F N="tb/soc_miner_tb.sv"/>
+            <F N="tb/sys_fm.v"/>
+        </Folder>
+    </Files>
+</Project>

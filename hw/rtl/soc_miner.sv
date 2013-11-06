@@ -7,7 +7,9 @@
  * Detailed description of file.
  */
 
-//`default_nettype none
+//synthesis translate_off
+`default_nettype none
+//synthesis translate_on
 
 module soc_miner #(
     parameter MEMORY_DATA_WIDTH=64, 
@@ -169,4 +171,4 @@ assign s_regs_rresp = m_axi4lite_if.rresp;
 endmodule
 
 
-//`default_nettype wire
+`default_nettype wire

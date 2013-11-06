@@ -7,7 +7,9 @@
  * Detailed description of file.
  */
 
-//`default_nettype none
+//synthesis translate_off
+`default_nettype none
+//synthesis translate_on
 module axi4lite2regbus(
     input logic Clk, 
     input logic Rst_n,
@@ -101,4 +103,4 @@ module axi4lite2regbus(
     
 endmodule
 
-//`default_nettype wire
+`default_nettype wire
