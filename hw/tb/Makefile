@@ -35,7 +35,8 @@ XILINX_FILES = ../../syn/soc_miner_io/soc_miner_io.srcs/sources_1/bd/soc_miner_i
 #TOP=axi_tb
 #TOP=axi_lite_tb
 #TOP=axi_lite_gasket_tb
-TOP=soc_miner_tb
+#TOP=soc_miner_tb
+TOP=soc_miner_wrapper
 
 all:
 	$(VCS) +lint=all -l vcs.log -fsdb -top $(TOP) -timescale=1ns/1ps  -sverilog  $(FILES) $(XILINX_FILES)

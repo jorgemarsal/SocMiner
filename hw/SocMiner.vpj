@@ -386,6 +386,7 @@
                     </Folder>
                 </Folder>
             </Folder>
+            <F N="../syn/soc_miner.tcl"/>
         </Folder>
         <Folder Name="tb">
             <F

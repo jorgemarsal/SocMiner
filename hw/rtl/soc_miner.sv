@@ -118,12 +118,12 @@ assign s_regs_rresp = m_axi4lite_if.rresp;
      *  wires
      */
 
-    logic go;      //start block operation
-    logic go_next;
+(* mark_debug = "true" *)    logic go;      //start block operation
+(* mark_debug = "true" *)    logic go_next;
 
-    logic [29:0] source_address;      //pointer to source data in dram (aligned to 4bytes)
-    logic [29:0] destination_address; //pointer to destination data in dram (aligned to 4bytes)
-    logic [31:0] length;              //length of data in dram
+(* mark_debug = "true" *)    logic [29:0] source_address;      //pointer to source data in dram (aligned to 4bytes)
+(* mark_debug = "true" *)    logic [29:0] destination_address; //pointer to destination data in dram (aligned to 4bytes)
+(* mark_debug = "true" *)    logic [31:0] length;              //length of data in dram
 
     /**
      * Auto clear. When sw writes a 1 to this field
