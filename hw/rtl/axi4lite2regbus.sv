@@ -13,8 +13,8 @@
 module axi4lite2regbus(
     input logic Clk, 
     input logic Rst_n,
-    regbus_if Regbus_if,
-    axi4lite_if Axi4lite_if
+    regbus_if.master_mp Regbus_if,
+    axi4lite_if.slave_mp Axi4lite_if
 );
         
    /* 
@@ -47,6 +47,7 @@ module axi4lite2regbus(
     input wire M_AXI_RVALID,
     output wire M_AXI_RREADY,
 */
+
     always_ff @(posedge Clk or negedge Rst_n) begin
         if (!Rst_n) begin
             //inputs
@@ -56,34 +57,46 @@ module axi4lite2regbus(
             Regbus_if.reg_wdata  <= 'h0;
             //outputs
             Axi4lite_if.awready <= 'h0;
-            Axi4lite_if.arready <= 'h1;
+            Axi4lite_if.arready <= 'h0;
             Axi4lite_if.wready <= 'h0;
             Axi4lite_if.rvalid <= 'h0;
             Axi4lite_if.rdata  <= 'h0;
             Axi4lite_if.bvalid  <= 'h0;
             Axi4lite_if.bresp  <= 'h0;
             Axi4lite_if.rresp  <= 'h0;
+            Axi4lite_if.rlast  <= 'h0;
         end
         else begin
             //inputs
-            Regbus_if.addr_valid <= Axi4lite_if.awvalid | Axi4lite_if.arvalid;
-            Regbus_if.reg_write  <= Axi4lite_if.awvalid;
-            Regbus_if.reg_addr   <= Axi4lite_if.awvalid ? Axi4lite_if.awaddr : Axi4lite_if.araddr;
+            Regbus_if.addr_valid <= (Axi4lite_if.awvalid && Axi4lite_if.awready) | (Axi4lite_if.arvalid && Axi4lite_if.arready);
+            
+            if(Axi4lite_if.awvalid && Axi4lite_if.awready) begin
+                Regbus_if.reg_write  <= 1'b1;    
+            end
+            else if(Axi4lite_if.arvalid && Axi4lite_if.arready) begin
+                Regbus_if.reg_write  <= 1'b0;
+            end
+            
+            
+            Regbus_if.reg_addr   <= (Axi4lite_if.awvalid && Axi4lite_if.awready) ? Axi4lite_if.awaddr : (Axi4lite_if.arvalid && Axi4lite_if.arready) ? Axi4lite_if.araddr : 'hbabeface;
             Regbus_if.reg_wdata  <= Axi4lite_if.wdata;
             //outputs
             Axi4lite_if.awready <= 'h1;
             Axi4lite_if.arready <= 'h1;
-            Axi4lite_if.wready <= Regbus_if.reg_ready;
+            Axi4lite_if.wready <= 'h1;
 
             //Axi4lite_if.rvalid <= Regbus_if.reg_ready;
             if(Axi4lite_if.rvalid & Axi4lite_if.rready) begin
                 Axi4lite_if.rvalid  <= 1'b0;
+                Axi4lite_if.rlast  <= 1'b0;
             end
-            else if (Regbus_if.reg_ready) begin
+            else if (Regbus_if.addr_valid & ~Regbus_if.reg_write) begin
                 Axi4lite_if.rvalid  <= 1'b1;
+                Axi4lite_if.rlast  <= 1'b1;
             end
             else begin
                 Axi4lite_if.rvalid  <= Axi4lite_if.rvalid;
+                Axi4lite_if.rlast  <= Axi4lite_if.rlast;
             end
 
             Axi4lite_if.rdata  <= Regbus_if.reg_rdata;  

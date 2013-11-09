@@ -34,6 +34,7 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
     logic rready;
     logic [DATA_WIDTH-1:0] rdata;
     logic [1:0] rresp;
+    logic rlast;
 
     modport master_mp( 
             output   awvalid , 
@@ -54,7 +55,8 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
             input    rvalid  ,
             output   rready  ,
             input    rdata   ,
-            input    rresp   
+            input    rresp   ,
+            input    rlast   
             
             );         
 
@@ -77,7 +79,8 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
             output   rvalid  ,
             input    rready  ,
             output   rdata   ,
-            output   rresp   
+            output   rresp   ,
+            output   rlast   
             );         
 
     modport monitor_mp(            
@@ -99,7 +102,8 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
             input    rvalid  ,
             input    rready  ,
             input    rdata   ,            
-            input    rresp   
+            input    rresp   ,
+            input    rlast   
             );
 
     

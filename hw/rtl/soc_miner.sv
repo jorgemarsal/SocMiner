@@ -82,16 +82,62 @@ output logic s_regs_arready,
 input  logic [REGS_ADDR_WIDTH-1:0] s_regs_araddr,   
 input  logic [2:0] s_regs_arprot,                                          
 output logic s_regs_rvalid,                    
+output logic s_regs_rlast,                    
 input  logic s_regs_rready,                    
 output logic [REGS_DATA_WIDTH-1:0] s_regs_rdata,    
 output logic [1:0] s_regs_rresp
 
     );
 
+    assign m_memory_awvalid  = 'h0;
+    assign m_memory_awaddr   = 'h0;
+    assign m_memory_awlen    = 'h0;
+    assign m_memory_awid     = 'h0;
+    assign m_memory_awsize   = 'h0;
+    assign m_memory_awburst  = 'h0;
+    assign m_memory_awlock   = 'h0;
+    assign m_memory_awcache  = 'h0;
+    assign m_memory_awprot   = 'h0;
+    assign m_memory_awqos    = 'h0;
+    assign m_memory_wvalid   = 'h0;
+    assign m_memory_wdata    = 'h0;
+    assign m_memory_wstrb    = 'h0;
+    assign m_memory_wlast    = 'h0;
+    assign m_memory_wid      = 'h0;
+    assign m_memory_bready   = 'h0;
+    assign m_memory_arvalid  = 'h0;
+    assign m_memory_araddr   = 'h0;
+    assign m_memory_arlen    = 'h0;
+    assign m_memory_arid     = 'h0;
+    assign m_memory_arsize   = 'h0;
+    assign m_memory_arburst  = 'h0;
+    assign m_memory_arlock   = 'h0;
+    assign m_memory_arcache  = 'h0;
+    assign m_memory_arprot   = 'h0;
+    assign m_memory_arqos    = 'h0;
+    assign m_memory_rready   = 'h0;
+
     /**
      *  interfaces
      */
     regbus_if m_regbus_if(Clk, Rst_n);
+    
+(* mark_debug = "true" *)  wire        addr_valid;
+(* mark_debug = "true" *)  wire [31:0] reg_addr;
+(* mark_debug = "true" *)  wire [31:0] reg_wdata;
+(* mark_debug = "true" *)  wire [31:0] reg_rdata;
+(* mark_debug = "true" *)  wire        reg_ready;
+(* mark_debug = "true" *)  wire        reg_write;
+
+    assign addr_valid = m_regbus_if.addr_valid;
+    assign reg_addr = m_regbus_if.reg_addr;
+    assign reg_wdata = m_regbus_if.reg_wdata;
+    assign reg_rdata = m_regbus_if.reg_rdata;
+    assign reg_ready = m_regbus_if.reg_ready;
+    assign reg_write = m_regbus_if.reg_write;
+    
+    
+    
     axi4lite_if m_axi4lite_if(Clk, Rst_n);
 
 assign m_axi4lite_if.awvalid = s_regs_awvalid;
@@ -110,9 +156,12 @@ assign s_regs_arready = m_axi4lite_if.arready;
 assign m_axi4lite_if.araddr = s_regs_araddr;
 assign m_axi4lite_if.arprot = s_regs_arprot;
 assign s_regs_rvalid = m_axi4lite_if.rvalid;
+assign s_regs_rlast = m_axi4lite_if.rlast;
 assign m_axi4lite_if.rready = s_regs_rready;
 assign s_regs_rdata = m_axi4lite_if.rdata;
 assign s_regs_rresp = m_axi4lite_if.rresp;
+
+
 
     /**
      *  wires
