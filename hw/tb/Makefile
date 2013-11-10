@@ -48,3 +48,13 @@ axi_test:
 	$(VCS) +lint=all -l vcs.log -fsdb -top soc_miner_tb -timescale=1ns/1ps  -sverilog  $(FILES) $(XILINX_FILES)
 	./simv +UVM_TESTNAME=$(UVM_TESTNAME)
 
+AXI_TEST2_FILES=../rtl/auto_clear.sv  ../rtl/axi4lite2regbus.sv  ../rtl/regbus2axi4lite.sv  ../rtl/soc_miner.sv \
+../rtl/axi4_if.sv     ../rtl/axi4lite_if.sv      ../rtl/regbus_if.sv ../rtl/soc_miner_regs.v axi_tb.sv sys_fm.v
+
+axi_test2:
+	$(VCS) -l vcs.log -fsdb -top axi_tb -timescale=1ns/1ps  -sverilog  $(AXI_TEST2_FILES)
+	./simv +UVM_TESTNAME=$(UVM_TESTNAME)
+axi_test2_lint:
+	$(VCS) +lint=all -l vcs.log -fsdb -top axi_tb -timescale=1ns/1ps  -sverilog  $(AXI_TEST2_FILES)
+	./simv +UVM_TESTNAME=$(UVM_TESTNAME)
+

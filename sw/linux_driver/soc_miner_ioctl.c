@@ -4,9 +4,7 @@ int32_t startupIoctl(IoctlArgument ioctlArgument)
 {
     char        data[PARAMETER_LEN];
     int32_t rc;
-#ifdef LOGGING_SUPPORT
-    LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE, "AAD Startup(0x%x)\n", ioctlArgument.par);
-#endif
+
     if (ioctlArgument.data != 0)
     {
         if (ioctlArgument.datalen > PARAMETER_LEN)
@@ -36,10 +34,6 @@ int32_t stopIoctl(IoctlArgument ioctlArgument)
 {
     int32_t rc;
 
-
-#ifdef LOGGING_SUPPORT
-    LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE, "AAD Stop(0x%x)\n", ioctlArgument.par);
-#endif
     rc = socStop(ioctlArgument.par);
     return (rc == 0) ? 0 : -EFAULT;
 
@@ -73,9 +67,6 @@ int32_t readRegister32Ioctl(IoctlArgument ioctlArgument)
         return -EFAULT;
     }
 
-#ifdef LOGGING_SUPPORT
-    LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE, "AAD ReadRegister32(0x%x,0x%08x,%u)\n", ioctlArgument.par, reg.address, reg.count);
-#endif
 
     if (reg.count > DRIVER_MAX_LOCAL_REGS)
     {
@@ -84,9 +75,7 @@ int32_t readRegister32Ioctl(IoctlArgument ioctlArgument)
         pt = (uint8_t*)kmalloc (size, GFP_KERNEL);
         if (pt == 0)
         {
-#ifdef LOGGING_SUPPORT
-            LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_ERRORS, "AAD ReadRegister32(0x%x,0x%08x,%u):out of memory!\n", ioctlArgument.par, reg.address, reg.count);
-#endif
+
             return -ENOMEM;
         }
         freeit = 1;
@@ -146,9 +135,7 @@ int32_t writeRegister32Ioctl(IoctlArgument ioctlArgument)
     {
         return -EFAULT;
     }
-#ifdef LOGGING_SUPPORT
-    LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE, "AAD WriteRegister32(0x%x,0x%08x,%u)\n", ioctlArgument.par, reg.address, reg.count);
-#endif
+
     if (reg.count > DRIVER_MAX_LOCAL_REGS)
     {
         size = (reg.count * 4 > DRIVER_MAX_BUFFER_SIZE) ? DRIVER_MAX_BUFFER_SIZE : reg.count * 4;
@@ -156,9 +143,7 @@ int32_t writeRegister32Ioctl(IoctlArgument ioctlArgument)
         pt = (uint8_t*)kmalloc (size, GFP_KERNEL);
         if (pt == 0)
         {
-#ifdef LOGGING_SUPPORT
-            LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_ERRORS, "AAD WriteRegister32(0x%x,0x%08x,%u):out of memory!", ioctlArgument.par, reg.address, reg.count);
-#endif
+
             return -ENOMEM;
         }
         freeit = 1;
@@ -216,9 +201,7 @@ int32_t readMemoryIoctl(IoctlArgument ioctlArgument)
     {
         return -EFAULT;
     }
-#ifdef LOGGING_SUPPORT
-    LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE, "AAD ReadMemory(0x%x,0x%08x,%u)\n", ioctlArgument.par, mem.address, mem.count);
-#endif
+
     size = (mem.count > DRIVER_MAX_BUFFER_SIZE) ? DRIVER_MAX_BUFFER_SIZE : mem.count;
     if (size == 0)
     {
@@ -227,9 +210,7 @@ int32_t readMemoryIoctl(IoctlArgument ioctlArgument)
     pt = (uint8_t*)kmalloc (size, GFP_KERNEL);
     if (pt == 0)
     {
-#ifdef LOGGING_SUPPORT
-        LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_ERRORS, "AAD ReadMemory(0x%x,0x%08x,%u):out of memory!\n", ioctlArgument.par, mem.address, mem.count);
-#endif
+
         return -ENOMEM;
     }
     loops = (mem.count + size - 1) / size;
@@ -273,16 +254,12 @@ int32_t writeMemoryIoctl(IoctlArgument ioctlArgument)
     {
         return -EFAULT;
     }
-#ifdef LOGGING_SUPPORT
-    LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE, "AAD WriteMemory(0x%x,0x%08x,%u)\n", ioctlArgument.par, mem.address, mem.count);
-#endif
+
     size = (mem.count > DRIVER_MAX_BUFFER_SIZE) ? DRIVER_MAX_BUFFER_SIZE : mem.count;
     pt = (uint8_t*)kmalloc (size, GFP_KERNEL);
     if (pt == 0)
     {
-#ifdef LOGGING_SUPPORT
-        LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_ERRORS, "AAD WriteMemory(0x%x,0x%08x,%u):out of memory!\n", ioctlArgument.par, mem.address, mem.count);
-#endif
+
         return -ENOMEM;
     }
     loops = (mem.count + size - 1) / size;
@@ -293,14 +270,7 @@ int32_t writeMemoryIoctl(IoctlArgument ioctlArgument)
 
         if (remaining != 0)
         {
-#ifdef LOGGING_SUPPORT
-            LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE,
-                       "AAD WriteMemory(0x%x,0x%08x,%u): copy_from_user failed.\n",
-                       ioctlArgument.par, mem.address, mem.count);
-            LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE,
-                       "    nbyte = %d, remaining = %d\n",
-                       nbyte, remaining);
-#endif
+
             kfree (pt);
             return -EFAULT;
         }
@@ -332,9 +302,7 @@ int32_t dmaReadIoctl(IoctlArgument ioctlArgument)
     {
         return -EFAULT;
     }
-#ifdef LOGGING_SUPPORT
-    LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE, "AAD DmaRead(0x%x,0x%08x,%u)\n", ioctlArgument.par, mem.address, mem.count);
-#endif
+
 
     if (socDmaRead(ioctlArgument.par, mem.address, mem.count, (void*)mem.value, mem.endian) != 0)
     {
@@ -357,9 +325,7 @@ int32_t dmaWriteIoctl(IoctlArgument ioctlArgument)
     {
         return -EFAULT;
     }
-#ifdef LOGGING_SUPPORT
-    LoggingLog(KERN_ERR, logAtlasAsicDriver, DRIVER_VERBOSE, "AAD DmaWrite(0x%x,0x%08x,%u)\n", ioctlArgument.par, mem.address, mem.count);
-#endif
+
 
     if (socDmaWrite(ioctlArgument.par, mem.address, mem.count, (void*)mem.value, mem.endian) != 0)
     {

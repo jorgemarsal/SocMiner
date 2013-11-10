@@ -19,7 +19,7 @@ int32_t socReadRegister32 (int32_t handler, int32_t asicId, uint32_t address, ui
     rc = ioctl (handler, SOC_READ_REGISTER32, &ioctlArgument);
     return (rc < 0) ? -1 : 0;
 
-}   /* atlasAsicReadRegister32 */
+}   /* socReadRegister32 */
 
 int32_t socWriteRegister32 (int32_t handler, int32_t asicId, uint32_t address, uint32_t nreg, uint32_t * value)
 {
@@ -39,7 +39,7 @@ int32_t socWriteRegister32 (int32_t handler, int32_t asicId, uint32_t address, u
     rc = ioctl (handler, SOC_WRITE_REGISTER32, &ioctlArgument);
     return (rc < 0) ? -1 : 0;
 
-}   /* atlasAsicWriteRegister32 */
+}   /* socWriteRegister32 */
 
 int32_t socReadMemory (int32_t handler, int32_t asicId, uint32_t address, uint32_t nbyte, uint8_t * value)
 {
@@ -59,7 +59,7 @@ int32_t socReadMemory (int32_t handler, int32_t asicId, uint32_t address, uint32
     rc = ioctl (handler, SOC_READ_MEMORY, &ioctlArgument);
     return (rc < 0) ? -1 : 0;
 
-}   /* atlasAsicReadMemory */
+}   /* socReadMemory */
 
 int32_t socWriteMemory (int32_t handler, int32_t asicId, uint32_t address, uint32_t nbyte, uint8_t * value)
 {
@@ -79,7 +79,7 @@ int32_t socWriteMemory (int32_t handler, int32_t asicId, uint32_t address, uint3
     rc = ioctl (handler, SOC_WRITE_MEMORY, &ioctlArgument);
     return (rc < 0) ? -1 : 0;
 
-}   /* atlasAsicWriteMemory */
+}   /* socWriteMemory */
 
 int32_t socStartup (int32_t handler,int32_t asicId, void *param, uint32_t paramLen)
 {
@@ -100,7 +100,7 @@ int32_t socStartup (int32_t handler,int32_t asicId, void *param, uint32_t paramL
     rc = ioctl (handler, SOC_STARTUP, &ioctlArgument);
     return (rc < 0) ? -1 : 0;
 
-}   /* atlasAsicStartup */
+}   /* socStartup */
 /*---------------------------------------------------------------------------*/
 
 
@@ -117,7 +117,7 @@ int32_t socStop (int32_t handler, int32_t asicId)
 
     return (rc < 0) ? -1 : 0;
 
-}   /* atlasAsicStop */
+}   /* socStop */
 
 int32_t socDmaRead (int32_t handler, int32_t asicId, uint32_t address, uint32_t nbyte, uint8_t * value, uint32_t endian)
 {
@@ -138,7 +138,7 @@ int32_t socDmaRead (int32_t handler, int32_t asicId, uint32_t address, uint32_t 
     rc = ioctl (handler, SOC_DMA_READ, &ioctlArgument);
     return (rc < 0) ? -1 : 0;
 
-}   /* atlasAsicDmaRead */
+}   /* socDmaRead */
 
 int32_t socDmaWrite (int32_t handler, int32_t asicId, uint32_t address, uint32_t nbyte, uint8_t * value, uint32_t endian)
 {
@@ -159,6 +159,6 @@ int32_t socDmaWrite (int32_t handler, int32_t asicId, uint32_t address, uint32_t
     rc = ioctl (handler, SOC_DMA_WRITE, &ioctlArgument);
     return (rc < 0) ? -1 : 0;
 
-}   /* atlasAsicDmaWrite */
+}   /* socDmaWrite */
 
 

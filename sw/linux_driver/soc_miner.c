@@ -607,8 +607,8 @@ static int soc_miner_probe(struct platform_device *pdev)
         }
         soc_miner_dev->dev_virtaddr = ioremap(soc_miner_dev->dev_physaddr,
                 soc_miner_dev->dev_addrsize);
-        PDEBUG("soc_miner: mapped 0x%0x to 0x%0x\n", soc_miner_dev->dev_physaddr,
-                (unsigned int)soc_miner_dev->dev_virtaddr);
+        PDEBUG("soc_miner: mapped 0x%0x to 0x%0x size:%x\n", soc_miner_dev->dev_physaddr,
+                (unsigned int)soc_miner_dev->dev_virtaddr, soc_miner_dev->dev_addrsize);
 
 #if 0
         soc_miner_dev->client_data = kmalloc(sizeof(struct pl330_client_data),

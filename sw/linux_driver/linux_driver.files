@@ -1,4 +1,3 @@
-userland/user.c
 devicetree.dtb
 hello.c
 Module.symvers
@@ -15,8 +14,10 @@ hello/hello.c
 soc_miner_ioctl.h
 soc_miner_ioctl.c
 soc_miner.h
-userland/soc_api.h
-userland/soc_api.c
-userland/Makefile
-userland/socreadregister32.c
-userland/socwriteregister32.c
+../userland/Makefile
+../userland/soc_api.h
+../userland/user.c
+../userland/socwriteregister32.c
+../userland/socreadregister32.c
+../userland/soc_api.c
+../userland/mem.c

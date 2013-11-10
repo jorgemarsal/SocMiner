@@ -1,0 +1,5 @@
+rmmod soc
+insmod soc.ko
+mknod /dev/hello c 233 0
+mknod /dev/soc_miner c 234 0
+lsmod

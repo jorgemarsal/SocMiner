@@ -1,48 +1,11 @@
-/********1*********2*********3*********4*********5*********6*********7*********8
-*
-* FILE      : sys_fm.v
-* HIERARCHY : tb/sys
-* FUNCTION  : Clock and reset generation functional model.
-* AUTHOR    : Narcis Simon
-*
-*_______________________________________________________________________________
-*
-* REVISION HISTORY
-*
-* Name      Date         Comments
-* ------------------------------------------------------------------------------
-* nsimon    16/Feb/2001  Created from Marti Rius testbench template
-* nsimon    02/Apr/2001  Added data skew support.
-* jvidal    19/Dec/2001  Support for 32 concurrent waitCycles tasks
-* nsimon    30/Jan/2003  Added floating point period and frequency display
-* ------------------------------------------------------------------------------
-*_______________________________________________________________________________
-* 
-* FUNCTIONAL DESCRIPTION 
-* This module performs the clock and reset generation. It is user controllable
-* using the tasks. The timings of the clock can be defined using the module
-* parameters.
-* Tasks defined:
-*   clkOn: starts the clock generation.
-*   clkOff: stops the clock generation.
-*   rstOn: asserts the reset.
-*   rstOff: deasserts the reset.
-*   CycleCounter: register that returns the current cycle number.
-*   waitDataSkew: waits DATA_SKEW time.
-*   waitCycles(<cycles>): wait for <cycles> positive edges of clock plus a data
-*      skew. A maximum of `MAX_WAIT_TASKS can be called simultaneously.
-*   waitCyclesWoSkew(<cycles>): wait for <cycles> positive edges of clock w/o
-*      the data skew. A maximum of `MAX_WAIT_TASKS can be called simultaneously.
-*_______________________________________________________________________________
-* 
-* (c) Copyright Hewlett-Packard Company, 2001 
-* All rights reserved. Copying or other reproduction of this 
-* program except for archival purposes is prohibited without 
-* written consent of Hewlett-Packard Company. 
-* HEWLETT-PACKARD COMPANY 
-* INKJET COMERCIAL DIVISION 
-* 
-*********1*********2*********3*********4*********5*********6*********7*********/
+/**
+ * @file   sys_fm.v
+ * @Author Jorge Martinez <jorge.marsal@gmail.com>
+ * @date   111013
+ * @brief  Brief description of file.
+ *
+ * Detailed description of file.
+ */
 
 `timescale 1ns / 1ps
 

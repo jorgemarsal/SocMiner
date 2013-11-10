@@ -395,6 +395,8 @@
             <F
                 N="tb/Makefile.system"
                 Type="Makefile"/>
+            <F N="tb/axi_driver.svh"/>
+            <F N="tb/axi_tb.sv"/>
             <F N="tb/soc_miner_tb.sv"/>
             <F N="tb/sys_fm.v"/>
         </Folder>

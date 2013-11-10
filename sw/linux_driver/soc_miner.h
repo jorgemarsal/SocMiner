@@ -63,7 +63,7 @@ int32_t socGetAttribute    (int32_t          asicId,
                                    uint32_t           * result);
 
 int32_t socGetParameter    (int32_t          asicId,
-                                   AtlasAsicParameter   parameter,
+                                   int32_t   parameter,
                                    uint32_t           * result);
 
 int32_t socStatistics      (int32_t asicId,

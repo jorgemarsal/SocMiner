@@ -12,8 +12,8 @@ int main(int argc, char *argv[])
         return 1;
     }
     char *ptr;
-    uint32_t address = strtol(argv[2], &ptr, 0);
-    uint32_t value   = strtol(argv[3], &ptr, 0);
+    uint32_t address = strtoul(argv[2], &ptr, 16);
+    uint32_t value   = strtoul(argv[3], &ptr, 16);
     printf("addr: 0x%x value: 0x%x\n", address,value);
 
     int fileDesc_ = open(argv[1], 0);

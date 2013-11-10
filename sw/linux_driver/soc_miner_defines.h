@@ -102,7 +102,7 @@ typedef struct
 } Statistics;
 
 /**
- * Structure to get AtlasAsic parameters.
+ * Structure to get parameters.
  */
 typedef struct
 {
@@ -110,7 +110,7 @@ typedef struct
     uint32_t parameter;
 } ParameterBlock;
 
-/*------------  Supported ioctl command codes for AtlasAsic  ----------------*/
+/*------------  Supported ioctl command codes   ----------------*/
 
 enum IoctlCommands
 {
