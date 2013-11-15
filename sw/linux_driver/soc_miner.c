@@ -23,6 +23,9 @@
 #include <asm/io.h>
 #include <linux/of.h>
 
+#include <linux/pagemap.h>
+#include <linux/delay.h>
+
 #include "soc_miner.h"
 #include "soc_miner_ioctl.h"
 
@@ -115,6 +118,472 @@ int32_t (*ioctlFunctionArray[])(IoctlArgument ioctlArgument) =
     0
 };
 
+#define SOURCE_ADDRESS_REG 0x4
+#define DESTINATION_ADDRESS_REG 0x8
+#define LENGTH_REG 0xC
+#define GO_REG 0x0
+
+static  int32_t launchDma(uint32_t              write,
+                              uint32_t              instance,
+                              void      * channel,//not used
+                              struct scatterlist ** sgList,
+                              uint32_t            * sgNum,
+                              uint32_t              sgNumTotal,
+                              uint32_t            * dest)
+{
+
+    dma_addr_t          pciaddr;
+    uint32_t            size;
+    uint32_t reg;
+    uint32_t deviceAddress;
+
+    deviceAddress = *dest;
+
+    while ((*sgList != 0) &&
+           (*sgNum < sgNumTotal))
+    {
+        printk(KERN_INFO "Processing descriptor");
+        /*
+         * Get the size and the address of the source data.
+         */
+        size    = sg_dma_len    (*sgList);
+        pciaddr = sg_dma_address(*sgList);
+
+        printk(KERN_INFO "size: %d addr: 0x%llu", size, (u64)pciaddr);
+
+        if(pciaddr & 0xffffffff00000000ULL) {
+            printk(KERN_INFO "addr is higher than 4G, not supported");
+            return -1;
+        }
+        if(pciaddr >= (1 << 30)) {
+            printk(KERN_INFO "addr is higher than 1G, not supported");
+            return -2;
+        }
+        if((pciaddr % 8) != 0) {
+            printk(KERN_INFO "addr should be aligned to 8 bytes");
+        }
+#if 1
+        //TODO include device address
+        if(write) {
+            //if we want to write to the device that's a read dma from the point of view of the device
+            printk(KERN_INFO "it's a write, setting reg source addr");
+            reg = pciaddr & 0xFFFFFFFFUL;
+            socWriteRegister32(0,SOURCE_ADDRESS_REG,1,&reg);
+            reg = 0;
+            socWriteRegister32(0,DESTINATION_ADDRESS_REG,1,&reg);
+        }
+        else {
+            //if we want to read from the device, that's a write dma from the point of view of the device
+            printk(KERN_INFO "it's a read, setting reg desti addr");
+            reg = pciaddr & 0xFFFFFFFFUL;
+            socWriteRegister32(0,DESTINATION_ADDRESS_REG,1,&reg);
+            reg = 0;
+            socWriteRegister32(0,SOURCE_ADDRESS_REG,1,&reg);
+
+        }
+#endif
+        //launch dma
+        reg = 0x1;
+#if 1
+        socWriteRegister32(0,GO_REG,1,&reg);
+#endif
+
+        deviceAddress += size;
+        /*
+         * Next entry in the scatter-gather list.
+         */
+        *sgList = sg_next(*sgList);
+
+        /*
+         * Keep the total count of entries in the scatter-gather list
+         * that we've used so far.
+         */
+        (*sgNum)++;
+    }
+    return 0;
+}
+
+/**********************************************************************/
+/* FUNCTION    : socDma                                            */
+/**********************************************************************/
+static int32_t socDma(uint32_t         write,
+                      uint32_t         instance,
+                      void * channel, //not used
+                      uint32_t         deviceAddress,
+                      uint32_t         nbyte,
+                      uint8_t        * hostAddress,
+                      uint32_t         endian)
+{
+    //Asic        *         asic     = &(asics[instance]);
+    struct page **        pages;
+    uint32_t              nr_pages;
+    uint32_t              pageNum;
+    uint32_t              sgNumTotal;
+    uint32_t              sgNum;
+    int32_t               i;
+    int32_t               res;
+    int                   bytesLeft;
+    struct scatterlist *  sgListIndex;
+    int32_t           result = 0;
+    unsigned long         alignsrc;
+    struct vm_area_struct *vma;
+    unsigned long          vmIo;
+    //unsigned long          vmReserved;
+
+ //   uint32_t paddress, reg;
+
+    struct sg_table sgTable;
+
+//    uint8_t *buffer;
+
+    /*
+     * Debugging.
+     */
+    printk(KERN_INFO "obelixDma -> instance: %d, write = %d, addr = 0x%x, bytes = %d, src = %p)\n",
+           instance, write, deviceAddress, nbyte, hostAddress);
+
+
+//    //buffer = kmalloc(nbyte, GFP_KERNEL | __GFP_DMA);
+//    buffer = alloc_pages_exact(1, GFP_KERNEL);
+//    if(!buffer) {
+//        printk(KERN_ERR "Unable to allocate mem for buffer");
+//        return -ENOMEM;
+//    }
+//    if (copy_from_user((void *) buffer,
+//                           (void *) hostAddress,
+//                           nbyte) != 0)
+//        {
+//            printk(KERN_ERR "%s: copy_from_user failed\n",
+//                   __FUNCTION__);
+//            return -EFAULT;
+//        }
+
+////    for(i = 0; i < nbyte;i++) {
+////        printk(KERN_INFO "0x%02x ", buffer[i]);
+////    }
+////    printk(KERN_INFO "\n");
+
+//    printk(KERN_INFO "buffer is:");
+//    for(i = 0; i < nbyte;i++) {
+//        printk(KERN_INFO "0x%02x\n", buffer[i]);
+//    }
+
+//    for(i = 0; i < 1024;i++) {
+//        buffer[i] = i;
+//    }
+//    wmb();
+
+//    paddress = virt_to_phys(buffer);
+//    printk(KERN_INFO "vaddress: 0x%x paddress 0x%x\n",
+//           (uint32_t)hostAddress,paddress);
+
+////    if(paddress >= (1 << 30)) {
+////        printk(KERN_INFO "address is beyond 1G");
+////        return -1;
+////    }
+
+//    if(write) {
+//        //if we want to write to the device that's a read dma from the point of view of the device
+//        printk(KERN_INFO "it's a write, setting reg source addr");
+//        reg = paddress;
+//        socWriteRegister32(0,SOURCE_ADDRESS_REG,1,&reg);
+//        reg = 0;
+//        socWriteRegister32(0,DESTINATION_ADDRESS_REG,1,&reg);
+//    }
+//    else {
+//        //if we want to read from the device, that's a write dma from the point of view of the device
+//        printk(KERN_INFO "it's a read, setting reg desti addr");
+//        reg = paddress;
+//        socWriteRegister32(0,DESTINATION_ADDRESS_REG,1,&reg);
+//        reg = 0;
+//        socWriteRegister32(0,SOURCE_ADDRESS_REG,1,&reg);
+
+//    }
+
+//    reg = 0x1;
+//    socWriteRegister32(0,GO_REG,1,&reg);
+
+//    mdelay(1);
+//   // kfree(buffer);
+//    free_pages_exact(buffer, 1);
+
+
+
+//    return 0;
+
+    /*
+     * Debugging.
+     */
+    printk(KERN_INFO "obelixDma -> instance: %d, write = %d, addr = 0x%x, bytes = %d, src = %p)\n",
+           instance, write, deviceAddress, nbyte, hostAddress);
+
+
+//    /*
+//     * Check contents of buffer. Useful for debugging when the
+//     * contents of the buffer are known.
+//     */
+//    if (debug)
+//    {
+//        if (write)
+//        {
+//            for (i = 0; i < MIN(nbyte, 8); i++)
+//            {
+//                printk(KERN_ERR
+//                       "hostAddress[%d] = %d\n", i, (int) hostAddress[i]);
+//            }
+//        }
+//    }
+
+    /*
+     * Get mutual exclusion.
+     */
+    //RedOSSemTake(channel->sem, RED_WAIT_FOREVER);
+
+    /*
+     * Compute the number of pages.
+     */
+    nr_pages   = (((unsigned long) hostAddress & ~PAGE_MASK) + nbyte + ~PAGE_MASK) >> PAGE_SHIFT;
+    alignsrc   = (unsigned long) hostAddress >> PAGE_SHIFT;
+    alignsrc <<= PAGE_SHIFT;
+
+    printk(KERN_DEBUG "obelixDma -> nr_pages: %d\n", nr_pages);
+    /*
+     * Allocate page structures.
+     */
+    //pages = (struct page **) ElektraMalloc(nr_pages * sizeof(*pages), EMEM_KERNEL);
+    pages = kmalloc(nr_pages * sizeof(*pages), GFP_KERNEL);
+    if(pages == NULL) {
+        printk(KERN_INFO "error allocating pages");
+        return -ENOMEM;
+    }
+    //assert_non_removable (pages != (struct page **) NULL);
+
+    /*
+     * Build the scatter-gather list. Note the first and last entries
+     * in the scatter-gather list are special.
+     */
+    //channel_alloc_sg_list(channel, nr_pages);
+    if(sg_alloc_table(&sgTable, nr_pages, GFP_KERNEL)) {
+        printk(KERN_INFO "error in sg_alloc_table");
+        return -1;
+    }
+
+    /*
+     * Get user-space pages.
+     */
+    down_read(&current->mm->mmap_sem);
+
+    /*
+     * Get VM area flags. We may not be able to get user pages for IO
+     * or reerved memory.
+     */
+    vma = find_vma(current->mm, (unsigned long) hostAddress);
+
+    if (!vma)
+    {
+        printk(KERN_INFO "Failed to find VMA for host address %p.\n", hostAddress);
+
+        up_read(&current->mm->mmap_sem);
+        //RedOSSemGive(channel->sem);
+        return -EFAULT;
+    }
+    else
+    {
+        vmIo       = vma->vm_flags & VM_IO;
+        //vmReserved = vma->vm_flags & VM_RESERVED;
+
+        if(vmIo)
+        //if (vmIo || vmReserved)
+        {
+            //printk(KERN_INFO "VM_IO = %lu, VM_RESERVED = %lu\n", vmIo, vmReserved);
+            printk(KERN_INFO "VM_IO = %lu\n", vmIo);
+            printk(KERN_INFO "VM start = 0x%lx, end = 0x%lx\n", vma->vm_start, vma->vm_end);
+        }
+    }
+
+    /*
+     * Note that a write to our device is a read from the kernel's
+     * point of view.
+     */
+    res = get_user_pages(current, current->mm, alignsrc, nr_pages, write ? 0 : 1, 0,
+                         pages, NULL);
+    up_read(&current->mm->mmap_sem);
+
+    /*
+     * get_user_pages can fail if we don't have permissions on the
+     * pages (-EFAULT), for instance if the memory is IO or it's
+     * reserved.
+     */
+    if (res < 0)
+    {
+        printk(KERN_INFO "get_user_pages failed errno = %d\n", res);
+        //RedOSSemGive(channel->sem);
+        return res;
+    }
+
+    if (res != nr_pages)
+    {
+        printk(KERN_INFO "get_user_pages returned a different number pages %d %d.\n",
+             res, nr_pages);
+        nr_pages = res;
+    }
+
+    bytesLeft = nbyte;
+
+    /*
+     * Build the scatter-gather list. See
+     * http://lwn.net/Articles/256368/ for changes to scatterlist
+     * introducted in 2.6.24.
+     */
+    //sgListIndex = channel_sg_list(channel);
+    sgListIndex = sgTable.sgl;
+
+    /*
+     * Sanity check, we assume the first entry is not a chain.
+     */
+    if(sg_is_chain(sgListIndex)) {
+        printk(KERN_INFO "sg_in_chain check failed");
+        return -1;
+    }
+
+    /*
+     * Build the scatter-gather list.
+     */
+    sg_assign_page(sgListIndex, pages[0]);
+
+    /*
+     * Offset for the first entry.
+     */
+    sgListIndex->offset = (long) hostAddress & ~PAGE_MASK;
+    printk(KERN_INFO "offset in first page is %d", sgListIndex->offset);
+
+    if (nr_pages > 1)
+    {
+        sgListIndex->length = PAGE_SIZE - sgListIndex->offset; bytesLeft -= sgListIndex->length;
+        sgListIndex = sg_next(sgListIndex);
+
+        for (pageNum = 1; pageNum < nr_pages ; pageNum++)
+        {
+            /*
+             * Sanity check, the scatterlist should be long enough to
+             * cover all pages.
+             */
+            if(!sgListIndex) {
+                printk(KERN_INFO "error in sglistindex");
+                return -1;
+            }
+
+            sgListIndex->offset = 0;
+            sgListIndex->length = (bytesLeft < PAGE_SIZE ? bytesLeft : PAGE_SIZE);
+
+            sg_assign_page(sgListIndex, pages[pageNum]);
+
+            bytesLeft -= PAGE_SIZE;
+
+            /*
+             * Go for the next entry. Note we can't just follow the
+             * scatterlist arrary because, starting in 2.6.24,
+             * scatterlists can be chained and not be a flat array.
+             */
+            if (pageNum < (nr_pages - 1))
+            {
+                sgListIndex = sg_next(sgListIndex);
+            }
+            else
+            {
+                /*
+                 * Mark the last entry. We may not use all the entries
+                 * if the scatterlist allocated before is bigger than
+                 * the number of pages requested this time.
+                 */
+                sg_mark_end(sgListIndex);
+            }
+        }
+    }
+    else
+    {
+        sgListIndex->length = bytesLeft;
+        printk(KERN_INFO "length is %d", sgListIndex->length);
+    }
+
+    /*
+     * Map the scatter-gather list.
+     */
+    sgNumTotal  = dma_map_sg(&(soc_miner_dev->pdev->dev),
+                             sgTable.sgl,
+                             nr_pages,
+                             write ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
+
+    if(sgNumTotal == 0) {
+        result = -1;
+        printk(KERN_INFO "error in dma_map_sg");
+    }
+
+
+    sgListIndex = sgTable.sgl;
+    sgNum       = 0;
+
+    while ((sgListIndex != 0) && (sgNum < sgNumTotal))
+    {
+        result = launchDma(write,
+                           instance,
+                           //asic,
+                           NULL,
+                           &sgListIndex,
+                           &sgNum,
+                           sgNumTotal,
+                           &deviceAddress);
+
+        if (result != 0)
+        {
+            printk(KERN_ERR "launch DMA Failed write %d, instance %d, dest 0x%x, nbyte 0x%0x, src %p, endian 0x%x\n",
+                   write, instance, deviceAddress, nbyte, hostAddress, endian);
+            printk(KERN_ERR "launch DMA Failed nr_pages = %d alignsrc = 0x%lx\n", nr_pages, alignsrc );
+            printk(KERN_ERR "launch DMA Failed pages = %p res= 0x%x\n", pages, res);
+            printk(KERN_ERR "launch DMA Failed sgList = %p sgNumTotal= 0x%x\n",
+                   sgListIndex,
+                   sgNumTotal);
+        }
+    }
+
+    /*
+     * Unmap the scatter-gather list.
+     */
+    dma_unmap_sg(&(soc_miner_dev->pdev->dev),
+                 sgTable.sgl,
+                 sgNumTotal,
+                 write ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
+
+    /*
+     * Release the pages from the page cache.
+     */
+    for (i=0; i < nr_pages; i++)
+    {
+        page_cache_release(pages[i]);
+    }
+
+    /*
+     * Free the statter-gather list.
+     */
+    //channel_free_sg_list(channel);
+    if (sgTable.sgl){                                     \
+        sg_free_table(&sgTable); \
+    }
+
+
+    /*
+     * Free the page structures.
+     */
+    //ElektraFree((void *) pages);
+    kfree((void *) pages);
+    /*
+     * Allow others to do DMAs.
+     */
+    //RedOSSemGive(channel->sem);
+
+    return result;
+}
+
 //
 // soc functions
 //
@@ -185,13 +654,16 @@ int32_t socClearMemory     (int32_t asicId,
 }
 
 int32_t socDmaRead         (int32_t asicId,
-                                   uint32_t address, uint32_t nbyte, uint8_t * value, uint32_t endian){
-    return 0;
+                                   uint32_t address, uint32_t nbyte, uint8_t * value, uint32_t endian){    
+    return socDma(0, 0, NULL, address, nbyte, value, endian);
 }
 int32_t socDmaWrite        (int32_t asicId,
                                    uint32_t address, uint32_t nbyte, uint8_t * value, uint32_t endian){
-    return 0;
+    return socDma(1, 0, NULL, address, nbyte, value, endian);
 }
+
+
+
 
 int32_t socIsrRegister     (int32_t asicId,
                                    uint32_t inum, uint32_t ipl, void (*handler)(void*, uint32_t), void * param){

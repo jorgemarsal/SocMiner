@@ -3,6 +3,7 @@ FILES= soc_miner_tb.sv \
 ../rtl/soc_miner_wrapper.v \
 ../rtl/axi4_if.sv \
 ../rtl/axi4lite_if.sv \
+../rtl/simple_memory_access.sv \
 sys_fm.v \
 ../axi_example/hdl/verilog/axi_slave.v \
 ../axi_example/hdl/verilog/axi_lite_slave.v \
@@ -38,6 +39,38 @@ XILINX_FILES = ../../syn/test2/test2.srcs/sources_1/bd/design_1/ip/design_1_proc
 #TOP=soc_miner_tb
 #TOP=soc_miner_wrapper
 
+AXI_FILES = \
+	    ../rtl/axi/ahblite_to_regbus.v                \
+	    ../rtl/axi/axi_gpi_sdv.v                      \
+	    ../rtl/axi/axi_gpt_sdv.v                      \
+	    ../rtl/axi/axi_initiator_fm.v                 \
+	    ../rtl/axi/AXIoo128_MonitorTransactor.v       \
+	    ../rtl/axi/AXIoo128_SlaveTransactor.v         \
+	    ../rtl/axi/AXIoo256_MonitorTransactor.v       \
+	    ../rtl/axi/AXIoo256_SlaveTransactor.v         \
+	    ../rtl/axi/AXIoo32_MonitorTransactor.v        \
+	    ../rtl/axi/AXIoo32_SlaveTransactor.v          \
+	    ../rtl/axi/AXIoo64_MonitorTransactor.v        \
+	    ../rtl/axi/AXIoo64_SlaveTransactor.v          \
+	    ../rtl/axi/AXIos128_MasterTransactor.v        \
+	    ../rtl/axi/AXIos256_MasterTransactor.v        \
+	    ../rtl/axi/AXIos32_MasterTLIface.v            \
+	    ../rtl/axi/AXIos32_MasterTransactor.v         \
+	    ../rtl/axi/AXIos64_MasterTransactor.v         \
+	    ../rtl/axi/AXIso128_SlaveTransactor.v         \
+	    ../rtl/axi/AXIso256_SlaveTransactor.v         \
+	    ../rtl/axi/AXIso32_SlaveTransactor.v          \
+	    ../rtl/axi/AXIso64_SlaveTransactor.v          \
+	    ../rtl/axi/axi_target_fm.v                    \
+	    ../rtl/axi/axi_to_ahblite_ahb_cmd.v           \
+	    ../rtl/axi/axi_to_ahblite_ahb_tracker.v       \
+	    ../rtl/axi/axi_to_ahblite_three_deep_queue.v  \
+	    ../rtl/axi/axi_to_ahblite_two_deep_queue.v    \
+	    ../rtl/axi/axi_to_ahblite.v                   \
+	    ../rtl/axi/cmd_queue.v                        \
+	    ../rtl/axi/queue_body.v
+
+
 all: soc_miner_wrapper
 
 soc_miner_wrapper:
@@ -49,12 +82,12 @@ axi_test:
 	./simv +UVM_TESTNAME=$(UVM_TESTNAME)
 
 AXI_TEST2_FILES=../rtl/auto_clear.sv  ../rtl/axi4lite2regbus.sv  ../rtl/regbus2axi4lite.sv  ../rtl/soc_miner.sv \
-../rtl/axi4_if.sv     ../rtl/axi4lite_if.sv      ../rtl/regbus_if.sv ../rtl/soc_miner_regs.v axi_tb.sv sys_fm.v
+../rtl/axi4_if.sv     ../rtl/axi4lite_if.sv      ../rtl/regbus_if.sv ../rtl/soc_miner_regs.v axi_tb.sv sys_fm.v ../rtl/simple_memory_access.sv
 
 axi_test2:
-	$(VCS) -l vcs.log -fsdb -top axi_tb -timescale=1ns/1ps  -sverilog  $(AXI_TEST2_FILES)
+	$(VCS) +incdir+../rtl/axi/ -l vcs.log -fsdb -top axi_tb -timescale=1ns/1ps  -sverilog  $(AXI_TEST2_FILES) $(AXI_FILES)
 	./simv +UVM_TESTNAME=$(UVM_TESTNAME)
 axi_test2_lint:
-	$(VCS) +lint=all -l vcs.log -fsdb -top axi_tb -timescale=1ns/1ps  -sverilog  $(AXI_TEST2_FILES)
+	$(VCS) +incdir+../rtl/axi/ +lint=all -l vcs.log -fsdb -top axi_tb -timescale=1ns/1ps  -sverilog  $(AXI_TEST2_FILES) $(AXI_FILES)
 	./simv +UVM_TESTNAME=$(UVM_TESTNAME)
 

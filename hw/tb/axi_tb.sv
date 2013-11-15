@@ -89,9 +89,72 @@ module axi_tb;
         .s_regs_rresp(m_axi4lite_if.rresp)
     );
 
+    axi_target_fm 
+        #(
+          .MEM_SIZE        (16384 * 4),
+          .DATA_WIDTH      (MEMORY_DATA_WIDTH),
+          .ADDR_WIDTH      (MEMORY_ADDR_WIDTH),
+          .MAX_LATENCY     (32),
+          .MEM_DEPTH       (256),
+          .LEN_WIDTH       (5),
+          .ID_WIDTH        (4),
+          .RESP_WIDTH      (2),
+          .SIZE_WIDTH      (3),
+          .BURST_WIDTH     (2),
+          .STRB_WIDTH      (MEMORY_DATA_WIDTH/8)
+          ) I_DRAM_CONTROLLER
+              (
+               .aclk              (clk                   ),
+               .aresetn           (rst_n                 ),
+
+               .awvalid           (m_axi4_if.awvalid     ),
+               .awaddr            (m_axi4_if.awaddr      ),
+               .awlen             (m_axi4_if.awlen       ),
+               .awsize            (m_axi4_if.awsize      ),
+               .awburst           (m_axi4_if.awburst     ),
+               .awlock            (m_axi4_if.awlock      ),
+               .awcache           (m_axi4_if.awcache     ),
+               .awprot            (m_axi4_if.awprot      ),
+               .awid              (m_axi4_if.awid        ),
+               .awready           (m_axi4_if.awready     ),
+                                                        
+               .arvalid           (m_axi4_if.arvalid     ),
+               .araddr            (m_axi4_if.araddr      ),
+               .arlen             (m_axi4_if.arlen       ),
+               .arsize            (m_axi4_if.arsize      ),
+               .arburst           (m_axi4_if.arburst     ),
+               .arlock            (m_axi4_if.arlock      ),
+               .arcache           (m_axi4_if.arcache     ),
+               .arprot            (m_axi4_if.arprot      ),
+               .arid              (m_axi4_if.arid        ),
+               .arready           (m_axi4_if.arready     ),
+                                                        
+               .rvalid            (m_axi4_if.rvalid      ),
+               .rlast             (m_axi4_if.rlast       ),
+               .rdata             (m_axi4_if.rdata       ),
+               .rresp             (m_axi4_if.rresp       ),
+               .rid               (m_axi4_if.rid         ),
+               .rready            (m_axi4_if.rready      ),
+                                                        
+               .wvalid            (m_axi4_if.wvalid      ),
+               .wlast             (m_axi4_if.wlast       ),
+               .wdata             (m_axi4_if.wdata       ),
+               .wstrb             (m_axi4_if.wstrb       ),
+               .wid               (m_axi4_if.wid         ),
+               .wready            (m_axi4_if.wready      ),
+                                                        
+               .bvalid            (m_axi4_if.bvalid      ),
+               .bresp             (m_axi4_if.bresp       ),
+               .bid               (m_axi4_if.bid         ),
+              .bready             (m_axi4_if.bready      )
+             );
+
     initial begin
+
+
         logic [31:0] data;
         axi_driver m_axi_driver;
+        
 
         m_axi4lite_if.awvalid = 1'b0;
         m_axi4lite_if.arvalid = 1'b0;
@@ -103,10 +166,16 @@ module axi_tb;
         I_SYS_FM.start;
         #100ns;
         wait(rst_n == 1);
+        #100ns;
+
+        //initialize axi memory
+        for(int i = 0; i < 1024; i++) axi_tb.I_DRAM_CONTROLLER.target.memory[i] <= i;
+        #100ns;
         
+        // 4: source 8: destination c: length
         m_axi_driver = new;
         m_axi_driver.m_if = axi_tb.m_axi4lite_if;
-        m_axi_driver.write('h4, 'hbabeface);
+        m_axi_driver.write('h4, 'h8); //source address: 'h8
         m_axi_driver.read('h4, data);
         $display("data: %h", data);
         m_axi_driver.write('h8, 'hbabeface);
@@ -115,6 +184,10 @@ module axi_tb;
         m_axi_driver.write('hc, 'hbabeface);
         m_axi_driver.read('hc, data);
         $display("data: %h", data);
+        m_axi_driver.write('h0, 'h1); //go!
+        #1000ns;
+        $display("simple read data: %h", I_SOC_MINER.I_SIMPLE_MEMORY_ACCESS.read_data);
+
 
         #1000ns;
         $finish(0);

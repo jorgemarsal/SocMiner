@@ -1,2 +1,2 @@
 all:
-	../../linux-xlnx/scripts/dtc/dtc -I dts -O dtb -o devicetree.dtb devicetree.dts
+	../../../linux-xlnx/scripts/dtc/dtc -I dts -O dtb -o devicetree.dtb devicetree.dts

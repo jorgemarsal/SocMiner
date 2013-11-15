@@ -64,12 +64,54 @@
     </CustomFolders>
     <Files AutoFolders="DirectoryView">
         <Folder Name="rtl">
+            <Folder Name="xcr">
+                <Folder Name="rtl">
+                    <F N="rtl/xcr/rtl/ab_selector.sv"/>
+                    <F N="rtl/xcr/rtl/buffer_manager.sv"/>
+                    <F N="rtl/xcr/rtl/double_buf_mgmt.sv"/>
+                    <F N="rtl/xcr/rtl/smaller_last_chunk_manager_v2.sv"/>
+                    <F N="rtl/xcr/rtl/smaller_last_chunk_manager_v2_cmd.sv"/>
+                    <F N="rtl/xcr/rtl/sram_buf_mgmt_v2.sv"/>
+                    <F N="rtl/xcr/rtl/xcr.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_config_sram.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_defs_pkg.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_descriptor_finished_detector.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_descriptor_reader.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_dram_data_fetch.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_dram_data_store.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_input_sram.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_inter_buffer_manager.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_output_sram.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_passtrhu_algorithm.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_sram_rd_addr_gen_1color.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_sram_wr_addr_gen_1color.sv"/>
+                    <F N="rtl/xcr/rtl/xcr_tb_if.sv"/>
+                </Folder>
+                <Folder Name="tb">
+                    <Folder Name="ovm">
+                        <F N="rtl/xcr/tb/ovm/axi_bfm_configurator.svh"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_driver.svh"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_env.svh"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_ovm_classes.sv"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_ovm_classes.svh"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_rd_pattern_test.sv"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_seq_item_base.svh"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_seq_item_example.svh"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_sequence.svh"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_tb.sv"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_tb_vif.svh"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_test.sv"/>
+                        <F N="rtl/xcr/tb/ovm/xcr_wr_pattern_test.sv"/>
+                    </Folder>
+                </Folder>
+            </Folder>
             <F N="rtl/auto_clear.sv"/>
             <F N="rtl/axi4_if.sv"/>
             <F N="rtl/axi4lite2regbus.sv"/>
             <F N="rtl/axi4lite_if.sv"/>
             <F N="rtl/regbus2axi4lite.sv"/>
             <F N="rtl/regbus_if.sv"/>
+            <F N="rtl/simple_memory_access.sv"/>
             <F N="rtl/soc_miner.sv"/>
             <F N="rtl/soc_miner_regs.v"/>
             <F N="rtl/soc_miner_wrapper.v"/>
@@ -389,6 +431,12 @@
             <F N="../syn/soc_miner.tcl"/>
         </Folder>
         <Folder Name="tb">
+            <Folder Name="sram">
+                <F
+                    N="tb/sram/Makefile"
+                    Type="Makefile"/>
+                <F N="tb/sram/sram_tb.sv"/>
+            </Folder>
             <F
                 N="tb/Makefile"
                 Type="Makefile"/>

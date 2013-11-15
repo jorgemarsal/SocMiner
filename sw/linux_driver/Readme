@@ -2,6 +2,7 @@ git clone git@github.com:Xilinx/linux-xlnx.git
 git checkout tags/<tag>
 #on the linux kernel directory
  make ARCH=arm CC=arm-xilinx-linux-gnueabi-gcc CROSS_COMPILE=arm-xilinx-linux-gnueabi- xilinx_zynq_defconfig
+ make ARCH=arm CC=arm-xilinx-linux-gnueabi-gcc CROSS_COMPILE=arm-xilinx-linux-gnueabi- modules
  make ARCH=arm CC=arm-xilinx-linux-gnueabi-gcc CROSS_COMPILE=arm-xilinx-linux-gnueabi- uImage
 
 

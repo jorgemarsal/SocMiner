@@ -1,6 +1,6 @@
 the_ROM_image:
 {
-	[bootloader]/home/jorgem/projects/SocMiner/binaries/fsbl.elf
-	/home/jorgem/projects/SocMiner/binaries/soc_miner_wrapper.bit
-	/home/jorgem/projects/SocMiner/binaries/u-boot.elf
+	[bootloader]/home/jorgem/projects/SocMiner/hw/binaries/fsbl.elf
+	/home/jorgem/projects/SocMiner/hw/binaries/soc_miner_wrapper.bit
+	/home/jorgem/projects/SocMiner/hw/binaries/u-boot.elf
 }
