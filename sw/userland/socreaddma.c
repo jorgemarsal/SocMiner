@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "soc_api.h"
 //#include "FileWriter.h"
 //#include "FileReader.h"
@@ -36,13 +37,19 @@ int main(int argc, char *argv[])
         if (fileDesc_) close(fileDesc_);
         return res;
     }
-    uint8_t *buffer = (uint8_t *)malloc(size);
+    uint32_t bytesInAPage = getpagesize();
+
+    printf("bytesInAPage: %d\n", bytesInAPage);
+    //uint8_t *buffer = (uint8_t *)malloc(size);
+    uint8_t *buffer;
+    posix_memalign((void **)&buffer, bytesInAPage, size);
     if(!buffer) {
 	    printf("unable to allocate buffer of size %d\n", size);
 	    return 10;
     }
+    for(i=0; i < 8; i++) buffer[i] = 0xff;
     //PreciseTimer timer;
-    res = socDmaRead(fileDesc_, 0,address,size, (uint8_t *)&buffer,0);
+    res = socDmaRead(fileDesc_, 0,address,size, buffer,0);
     //res = 0;
     //double seconds = timer.elapsed();
     //printf("dma -> %f Mbytes/s\n", size/seconds/1024.0/1024.0);

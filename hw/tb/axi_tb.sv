@@ -71,7 +71,7 @@ module axi_tb;
         .s_regs_awvalid(m_axi4lite_if.awvalid),
         .s_regs_awready(m_axi4lite_if.awready),
         .s_regs_awaddr(m_axi4lite_if.awaddr),
-        .s_regs_awprot(m_axi4lite_if.awprot),
+        .s_regs_awlen(m_axi4lite_if.awlen),
         .s_regs_wvalid(m_axi4lite_if.wvalid),
         .s_regs_wready(m_axi4lite_if.wready),
         .s_regs_wdata(m_axi4lite_if.wdata),
@@ -82,9 +82,10 @@ module axi_tb;
         .s_regs_arvalid(m_axi4lite_if.arvalid),
         .s_regs_arready(m_axi4lite_if.arready),
         .s_regs_araddr(m_axi4lite_if.araddr),
-        .s_regs_arprot(m_axi4lite_if.arprot),
+        .s_regs_arlen(m_axi4lite_if.arlen),
         .s_regs_rvalid(m_axi4lite_if.rvalid),
         .s_regs_rready(m_axi4lite_if.rready),
+        .s_regs_rlast(m_axi4lite_if.rlast),
         .s_regs_rdata(m_axi4lite_if.rdata),
         .s_regs_rresp(m_axi4lite_if.rresp)
     );
@@ -96,8 +97,8 @@ module axi_tb;
           .ADDR_WIDTH      (MEMORY_ADDR_WIDTH),
           .MAX_LATENCY     (32),
           .MEM_DEPTH       (256),
-          .LEN_WIDTH       (5),
-          .ID_WIDTH        (4),
+          .LEN_WIDTH       (4),
+          .ID_WIDTH        (6),
           .RESP_WIDTH      (2),
           .SIZE_WIDTH      (3),
           .BURST_WIDTH     (2),
@@ -149,6 +150,11 @@ module axi_tb;
               .bready             (m_axi4_if.bready      )
              );
 
+    localparam DEBUG_MEM_WRITES_SRAM = 'h1000;
+    localparam DEBUG_MEM_READS_SRAM = 'h1400;
+    localparam DEBUG_REGS_WRITES_SRAM = 'h1800;
+    localparam DEBUG_REGS_READS_SRAM = 'h1c00;
+
     initial begin
 
 
@@ -175,18 +181,69 @@ module axi_tb;
         // 4: source 8: destination c: length
         m_axi_driver = new;
         m_axi_driver.m_if = axi_tb.m_axi4lite_if;
-        m_axi_driver.write('h4, 'h8); //source address: 'h8
+
+        m_axi_driver.write('h10, 'h4); //4 cycles between command and data
+        m_axi_driver.read('h10, data);
+        if(data != ('h4 & 'hffffffff)) begin
+            $fatal("expected: %h got: %h", 'h4, data);
+        end
+        $display("data: %h", data);
+
+        m_axi_driver.write('h4, 'h400); //source address
         m_axi_driver.read('h4, data);
+        if(data != ('h400 & 'hfffffffc)) begin
+            $fatal("expected: %h got: %h", 'h400, data);
+        end
         $display("data: %h", data);
-        m_axi_driver.write('h8, 'hbabeface);
+        m_axi_driver.write('h8, 'h400); //dst address
         m_axi_driver.read('h8, data);
+        if(data != ('h400 & 'hfffffffc)) begin
+            $fatal("expected: %h got: %h", 'h400, data);
+        end
         $display("data: %h", data);
-        m_axi_driver.write('hc, 'hbabeface);
+        m_axi_driver.write('hc, 'hbabeface); //length
         m_axi_driver.read('hc, data);
+        if(data != ('hbabeface & 'hffffffff)) begin
+            $fatal("expected: %h got: %h", 'hbabeface, data);
+        end
         $display("data: %h", data);
-        m_axi_driver.write('h0, 'h1); //go!
+        m_axi_driver.write('h0, 'h1); //go write!
+        #1000ns;
+        m_axi_driver.write('h0, 'h10); //go read!
         #1000ns;
         $display("simple read data: %h", I_SOC_MINER.I_SIMPLE_MEMORY_ACCESS.read_data);
+        if(I_SOC_MINER.I_SIMPLE_MEMORY_ACCESS.read_data != {32'hbabeface, 32'h01234567}) begin
+            $fatal("expected: %h got: %h", {32'hbabeface, 32'h01234567}, I_SOC_MINER.I_SIMPLE_MEMORY_ACCESS.read_data);
+        end
+
+        
+        $display("DEBUG_MEM_WRITES_SRAM:");
+        for(int i = 0; i < 8; i++) begin
+            m_axi_driver.read(DEBUG_MEM_WRITES_SRAM+i*4, data);
+            $display("@%h -> addr: %h len: %h", 'h400+i*4, {data[31:4], 4'h0}, data[3:0]);
+        end
+
+        $display("DEBUG_MEM_READS_SRAM:");
+        for(int i = 0; i < 8; i++) begin
+            m_axi_driver.read(DEBUG_MEM_READS_SRAM+i*4, data);
+            $display("@%h -> addr: %h len: %h", 'h400+i*4, {data[31:4], 4'h0}, data[3:0]);
+        end
+
+        $display("DEBUG_REGS_WRITES_SRAM:");
+        for(int i = 0; i < 8; i++) begin
+            m_axi_driver.read(DEBUG_REGS_WRITES_SRAM+i*4, data);
+//            $display("@%h -> addr: %h len: %h", 'h400+i*4, {4'h0,data[31:4]}, data[3:0]);
+            $display("@%h -> data: %h", 'h400+i*4, data);
+        end
+
+        //polluted by debug sram reads
+        $display("DEBUG_REGS_READS_SRAM:");
+        for(int i = 0; i < 8; i++) begin
+            m_axi_driver.read(DEBUG_REGS_READS_SRAM+i*4, data);
+//            $display("@%h -> addr: %h len: %h", 'h400+i*4, {4'h0,data[31:4]}, data[3:0]);
+            $display("@%h -> data: %h", 'h400+i*4, data);
+        end
+
 
 
         #1000ns;

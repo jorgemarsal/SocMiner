@@ -14,7 +14,7 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
     logic awvalid;
     logic awready;
     logic [ADDR_WIDTH-1:0] awaddr;
-    logic [2:0] awprot;
+    logic [3:0] awlen;
 
     logic wvalid;
     logic wready;
@@ -28,7 +28,7 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
     logic arvalid;
     logic arready;
     logic [ADDR_WIDTH-1:0] araddr;
-    logic [2:0] arprot;
+    logic [3:0] arlen;
 
     logic rvalid;
     logic rready;
@@ -40,7 +40,7 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
             output   awvalid , 
             input    awready , 
             output   awaddr  , 
-            output   awprot  ,
+            output   awlen  ,
             output   wvalid  ,
             input    wready  ,
             output   wdata   ,
@@ -51,7 +51,7 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
             output   arvalid ,
             input    arready ,
             output   araddr  ,
-            output   arprot  ,
+            output   arlen  ,
             input    rvalid  ,
             output   rready  ,
             input    rdata   ,
@@ -64,7 +64,7 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
             input    awvalid , 
             output   awready , 
             input    awaddr  , 
-            input    awprot  ,
+            input    awlen  ,
             input    wvalid  ,
             output   wready  ,
             input    wdata   ,
@@ -75,7 +75,7 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
             input    arvalid ,
             output   arready ,
             input    araddr  ,
-            input    arprot  ,
+            input    arlen  ,
             output   rvalid  ,
             input    rready  ,
             output   rdata   ,
@@ -87,7 +87,7 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
             input    awvalid , 
             input    awready , 
             input    awaddr  , 
-            input    awprot  ,
+            input    awlen  ,
             input    wvalid  ,
             input    wready  ,
             input    wdata   ,
@@ -98,7 +98,7 @@ interface axi4lite_if #(parameter ADDR_WIDTH = 32,
             input    arvalid ,
             input    arready ,
             input    araddr  ,
-            input    arprot  ,
+            input    arlen  ,
             input    rvalid  ,
             input    rready  ,
             input    rdata   ,            

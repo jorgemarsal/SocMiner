@@ -63,6 +63,7 @@ class axi_driver;// extends uvm_component;
         @(posedge m_if.clk);
         m_if.awvalid  <= 'h1;
         m_if.awaddr   <= addr;
+        m_if.awlen   <= 'h0;
         m_if.wvalid  <= 'h1;
         m_if.wdata   <= data;
         while(!(m_if.awvalid && m_if.awready)) begin
@@ -95,7 +96,7 @@ class axi_driver;// extends uvm_component;
         data = m_if.rdata;
 
         @(posedge m_if.clk);
-        $display("read %h from addr %h", data, addr);
+        //$display("read %h from addr %h", data, addr);
         
     endtask
 endclass

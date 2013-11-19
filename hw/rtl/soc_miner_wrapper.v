@@ -49,83 +49,83 @@ inout  wire       FIXED_IO_ps_srstb
 wire [0:0] ACLK;
 wire FCLK_RESET0_N;
 (* mark_debug = "true" *) wire [31:0] M00_AXI_ARADDR;
-                          wire [1:0] M00_AXI_ARBURST;
-                          wire [3:0] M00_AXI_ARCACHE;
-                          wire [11:0] M00_AXI_ARID;
+  wire [1:0] M00_AXI_ARBURST;
+  wire [3:0] M00_AXI_ARCACHE;
+  wire [11:0] M00_AXI_ARID;
 (* mark_debug = "true" *) wire [3:0] M00_AXI_ARLEN;
-                          wire [1:0] M00_AXI_ARLOCK;
-                          wire [2:0] M00_AXI_ARPROT;
-                          wire [3:0] M00_AXI_ARQOS;
+ wire [1:0] M00_AXI_ARLOCK;
+ wire [2:0] M00_AXI_ARPROT;
+ wire [3:0] M00_AXI_ARQOS;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_ARREADY;
-                          wire [2:0] M00_AXI_ARSIZE;
+ wire [2:0] M00_AXI_ARSIZE;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_ARVALID;
 (* mark_debug = "true" *) wire [31:0] M00_AXI_AWADDR;
-                          wire [1:0] M00_AXI_AWBURST;
-                          wire [3:0] M00_AXI_AWCACHE;
-                          wire [11:0] M00_AXI_AWID;
+ wire [1:0] M00_AXI_AWBURST;
+ wire [3:0] M00_AXI_AWCACHE;
+ wire [11:0] M00_AXI_AWID;
 (* mark_debug = "true" *) wire [3:0] M00_AXI_AWLEN;
-                          wire [1:0] M00_AXI_AWLOCK;
-                          wire [2:0] M00_AXI_AWPROT;
-                          wire [3:0] M00_AXI_AWQOS;
+ wire [1:0] M00_AXI_AWLOCK;
+ wire [2:0] M00_AXI_AWPROT;
+ wire [3:0] M00_AXI_AWQOS;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_AWREADY;
-                          wire [2:0] M00_AXI_AWSIZE;
+wire [2:0] M00_AXI_AWSIZE;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_AWVALID;
-                          wire [11:0] M00_AXI_BID;
-                          assign M00_AXI_BID = M00_AXI_AWID;
+wire [11:0] M00_AXI_BID;
+(* mark_debug = "true" *) assign M00_AXI_BID = M00_AXI_AWID;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_BREADY;
-                          wire [1:0] M00_AXI_BRESP;
+(* mark_debug = "true" *) wire [1:0] M00_AXI_BRESP;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_BVALID;
 (* mark_debug = "true" *) wire [31:0] M00_AXI_RDATA;
-                          wire [11:0] M00_AXI_RID;
-                          assign M00_AXI_RID = M00_AXI_ARID;
+ wire [11:0] M00_AXI_RID;
+ assign M00_AXI_RID = M00_AXI_ARID;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_RLAST;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_RREADY;
-                          wire [1:0] M00_AXI_RRESP;
+ wire [1:0] M00_AXI_RRESP;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_RVALID;
 (* mark_debug = "true" *) wire [31:0] M00_AXI_WDATA;
-                          wire [11:0] M00_AXI_WID;
+ wire [11:0] M00_AXI_WID;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_WLAST;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_WREADY;
-                          wire [3:0] M00_AXI_WSTRB;
+(* mark_debug = "true" *) wire [3:0] M00_AXI_WSTRB;
 (* mark_debug = "true" *) wire [0:0] M00_AXI_WVALID;
 
 (* mark_debug = "true" *) wire [31:0] S00_AXI_ARADDR;
-                          wire [1:0] S00_AXI_ARBURST;
-                          wire [3:0] S00_AXI_ARCACHE;
-                          wire [5:0] S00_AXI_ARID;
+ wire [1:0] S00_AXI_ARBURST;
+ wire [3:0] S00_AXI_ARCACHE;
+ wire [5:0] S00_AXI_ARID;
 (* mark_debug = "true" *) wire [3:0] S00_AXI_ARLEN;
-                          wire [1:0] S00_AXI_ARLOCK;
-                          wire [2:0] S00_AXI_ARPROT;
-                          wire [3:0] S00_AXI_ARQOS;
+ wire [1:0] S00_AXI_ARLOCK;
+ wire [2:0] S00_AXI_ARPROT;
+ wire [3:0] S00_AXI_ARQOS;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_ARREADY;
-                          wire [2:0] S00_AXI_ARSIZE;
+wire [2:0] S00_AXI_ARSIZE;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_ARVALID;
 (* mark_debug = "true" *) wire [31:0] S00_AXI_AWADDR;
-                          wire [1:0] S00_AXI_AWBURST;
-                          wire [3:0] S00_AXI_AWCACHE;
-                          wire [5:0] S00_AXI_AWID;
+ wire [1:0] S00_AXI_AWBURST;
+ wire [3:0] S00_AXI_AWCACHE;
+ wire [5:0] S00_AXI_AWID;
 (* mark_debug = "true" *) wire [3:0] S00_AXI_AWLEN;
-                          wire [1:0] S00_AXI_AWLOCK;
-                          wire [2:0] S00_AXI_AWPROT;
-                          wire [3:0] S00_AXI_AWQOS;
+ wire [1:0] S00_AXI_AWLOCK;
+ wire [2:0] S00_AXI_AWPROT;
+ wire [3:0] S00_AXI_AWQOS;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_AWREADY;
-                          wire [2:0] S00_AXI_AWSIZE;
+wire [2:0] S00_AXI_AWSIZE;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_AWVALID;
-                          wire [5:0] S00_AXI_BID;
+ wire [5:0] S00_AXI_BID;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_BREADY;
-                          wire [1:0] S00_AXI_BRESP;
+(* mark_debug = "true" *) wire [1:0] S00_AXI_BRESP;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_BVALID;
 (* mark_debug = "true" *) wire [63:0] S00_AXI_RDATA;
-                          wire [5:0] S00_AXI_RID;
+wire [5:0] S00_AXI_RID;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_RLAST;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_RREADY;
-                          wire [1:0] S00_AXI_RRESP;
+(* mark_debug = "true" *) wire [1:0] S00_AXI_RRESP;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_RVALID;
 (* mark_debug = "true" *) wire [63:0] S00_AXI_WDATA;
-                          wire [5:0] S00_AXI_WID;
+ wire [5:0] S00_AXI_WID;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_WLAST;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_WREADY;
-                          wire [7:0] S00_AXI_WSTRB;
+(* mark_debug = "true" *) wire [7:0] S00_AXI_WSTRB;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_WVALID;
 
 
@@ -284,7 +284,7 @@ soc_miner #(.MEMORY_DATA_WIDTH(MEMORY_DATA_WIDTH),
     .s_regs_awvalid(M00_AXI_AWVALID),
     .s_regs_awready(M00_AXI_AWREADY),
     .s_regs_awaddr(M00_AXI_AWADDR),
-    .s_regs_awprot(M00_AXI_AWPROT),
+    .s_regs_awlen(M00_AXI_AWLEN),
     .s_regs_wvalid(M00_AXI_WVALID),
     .s_regs_wready(M00_AXI_WREADY),
     .s_regs_wdata(M00_AXI_WDATA),
@@ -295,7 +295,7 @@ soc_miner #(.MEMORY_DATA_WIDTH(MEMORY_DATA_WIDTH),
     .s_regs_arvalid(M00_AXI_ARVALID),
     .s_regs_arready(M00_AXI_ARREADY),
     .s_regs_araddr(M00_AXI_ARADDR),
-    .s_regs_arprot(M00_AXI_ARPROT),
+    .s_regs_arlen(M00_AXI_ARLEN),
     
     .s_regs_rvalid(M00_AXI_RVALID),
     .s_regs_rlast(M00_AXI_RLAST),

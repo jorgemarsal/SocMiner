@@ -1,20 +1,20 @@
 //                                                                             
 // File:       soc_miner_regs.v                                                
 // Creator:    jorgem                                                          
-// Time:       Monday Sep 30, 2013 [6:23:45 pm]                                
+// Time:       Monday Nov 18, 2013 [7:21:28 am]                                
 //                                                                             
-// Path:       /v/049/share02/jorgem/bitcoin/SocMiner/hw/rdl                   
-// Arguments:  /apps/cadence/blueprint/blueprint_3.7.5/Linux-64bit/blueprint   
+// Path:       /home/jorgem/projects/SocMiner/hw/rtl                           
+// Arguments:  /data/apps/cadence/blueprint/blueprint_3.7.5//Linux-64bit/blueprint
 //             -regbus soc_miner_regs.rdl                                      
 //                                                                             
-// Sources:    /v/049/share02/jorgem/bitcoin/SocMiner/hw/rdl/soc_miner_regs.rdl
-//             /h/jorgem/ae/asic_tools/bp_gens/regbus.pm                       
-//             /h/jorgem/ae/asic_tools/bp_gens/vutils.pm                       
-//             /h/jorgem/ae/asic_tools/bp_gens/verilog.pm                      
+// Sources:    /home/jorgem/projects/SocMiner/hw/rtl/soc_miner_regs.rdl        
+//             /data/apps/cadence/blueprint/blueprint_3.7.5/bp_gens/verilog.pm 
+//             /data/apps/cadence/blueprint/blueprint_3.7.5/bp_gens/regbus.pm  
+//             /data/apps/cadence/blueprint/blueprint_3.7.5/bp_gens/vutils.pm  
 //                                                                             
 // Blueprint:   3.7.5 (Wed Feb 1 23:58:40 PST 2012)                            
-// Machine:    vl155.cce.hp.com                                                
-// OS:         Linux 2.6.18-308.el5                                            
+// Machine:    ubuntu                                                          
+// OS:         Linux 3.8.0-19-generic                                          
 // Description:                                                                
 //                                                                             
 // No Description Provided                                                     
@@ -30,15 +30,34 @@ module soc_miner_regs (
   RegBus_val,
   RegBus_write_data,
   RegBus_address,
-  control_go_next,
+  control_go_read_next,
   RESET,
+  control_go_write_next,
+  debug_mem_wr_sram_read_data,
+  debug_mem_wr_sram_access_complete,
+  debug_mem_rd_sram_read_data,
+  debug_mem_rd_sram_access_complete,
+  debug_regs_wr_sram_read_data,
+  debug_regs_wr_sram_access_complete,
+  debug_regs_rd_sram_read_data,
+  debug_regs_rd_sram_access_complete,
 
   RegBus_read_data,
   RegBus_access_complete,
-  control_go,
+  control_go_read,
+  control_go_write,
   source_address_address,
   destination_address_address,
-  length_length
+  length_length,
+  axi_command_to_data_cycles,
+  debug_mem_wr_sram_read,
+  debug_mem_wr_sram_address,
+  debug_mem_rd_sram_read,
+  debug_mem_rd_sram_address,
+  debug_regs_wr_sram_read,
+  debug_regs_wr_sram_address,
+  debug_regs_rd_sram_read,
+  debug_regs_rd_sram_address
   );
 
 // Input declarations
@@ -46,17 +65,36 @@ module soc_miner_regs (
   input           RegBus_read;
   input           RegBus_val;
   input [31:0]    RegBus_write_data;
-  input [3:2]     RegBus_address;
-  input           control_go_next;
+  input [12:2]    RegBus_address;
+  input           control_go_read_next;
   input           RESET;
+  input           control_go_write_next;
+  input [31:0]    debug_mem_wr_sram_read_data;
+  input           debug_mem_wr_sram_access_complete;
+  input [31:0]    debug_mem_rd_sram_read_data;
+  input           debug_mem_rd_sram_access_complete;
+  input [31:0]    debug_regs_wr_sram_read_data;
+  input           debug_regs_wr_sram_access_complete;
+  input [31:0]    debug_regs_rd_sram_read_data;
+  input           debug_regs_rd_sram_access_complete;
 
 // Output declarations
   output [31:0]   RegBus_read_data;
   output          RegBus_access_complete;
-  output          control_go;
+  output          control_go_read;
+  output          control_go_write;
   output [29:0]   source_address_address;
   output [29:0]   destination_address_address;
   output [31:0]   length_length;
+  output [15:0]   axi_command_to_data_cycles;
+  output          debug_mem_wr_sram_read;
+  output [9:2]    debug_mem_wr_sram_address;
+  output          debug_mem_rd_sram_read;
+  output [9:2]    debug_mem_rd_sram_address;
+  output          debug_regs_wr_sram_read;
+  output [9:2]    debug_regs_wr_sram_address;
+  output          debug_regs_rd_sram_read;
+  output [9:2]    debug_regs_rd_sram_address;
 
 // Wire declarations
   wire            Clk;
@@ -75,17 +113,22 @@ module soc_miner_regs (
   wire            RegBus_access_complete;
   wire            RegBus_access_complete_ucore;
   wire            RegBus_access_complete_dcore;
-  wire [3:2]      RegBus_address;
-  wire [3:2]      RegBus_address_ucore;
-  wire [3:2]      RegBus_address_dcore;
+  wire [12:2]     RegBus_address;
+  wire [12:2]     RegBus_address_ucore;
+  wire [12:2]     RegBus_address_dcore;
   wire            RegBus_xfer_valid_internal;
-  wire            control_full_read_data;
-  wire            control_go__write;
-  wire            control_go__sw_next;
-  wire            control_go__swmod;
-  wire            control_go_next;
-  wire            control_go__field_next;
+  wire [4:0]      control_full_read_data;
+  wire            control_go_read__write;
+  wire            control_go_read__sw_next;
+  wire            control_go_read__swmod;
+  wire            control_go_read_next;
+  wire            control_go_read__field_next;
   wire            RESET;
+  wire            control_go_write__write;
+  wire            control_go_write__sw_next;
+  wire            control_go_write__swmod;
+  wire            control_go_write_next;
+  wire            control_go_write__field_next;
   wire [31:2]     source_address_full_read_data;
   wire            source_address_address__write;
   wire [29:0]     source_address_address__sw_next;
@@ -101,6 +144,28 @@ module soc_miner_regs (
   wire [31:0]     length_length__sw_next;
   wire            length_length__swmod;
   wire [31:0]     length_length__field_next;
+  wire [15:0]     axi_full_read_data;
+  wire            axi_command_to_data_cycles__write;
+  wire [15:0]     axi_command_to_data_cycles__sw_next;
+  wire            axi_command_to_data_cycles__swmod;
+  wire [15:0]     axi_command_to_data_cycles__field_next;
+  wire            debug_mem_wr_sram_read;
+  wire            valid_RegBus_read;
+  wire [31:0]     debug_mem_wr_sram_read_data;
+  wire [9:2]      debug_mem_wr_sram_address;
+  wire            debug_mem_wr_sram_access_complete;
+  wire            debug_mem_rd_sram_read;
+  wire [31:0]     debug_mem_rd_sram_read_data;
+  wire [9:2]      debug_mem_rd_sram_address;
+  wire            debug_mem_rd_sram_access_complete;
+  wire            debug_regs_wr_sram_read;
+  wire [31:0]     debug_regs_wr_sram_read_data;
+  wire [9:2]      debug_regs_wr_sram_address;
+  wire            debug_regs_wr_sram_access_complete;
+  wire            debug_regs_rd_sram_read;
+  wire [31:0]     debug_regs_rd_sram_read_data;
+  wire [9:2]      debug_regs_rd_sram_address;
+  wire            debug_regs_rd_sram_access_complete;
 
 // Reg declarations
   reg [31:0]      RegBus_read_data_dcore;
@@ -108,13 +173,20 @@ module soc_miner_regs (
   reg             RegBus_address_valid_internal;
   reg             RegBus_access_valid_internal;
   reg             control_decode;
-  reg             control_go;
+  reg             control_go_read;
+  reg             control_go_write;
   reg             source_address_decode;
   reg [29:0]      source_address_address;
   reg             destination_address_decode;
   reg [29:0]      destination_address_address;
   reg             length_decode;
   reg [31:0]      length_length;
+  reg             axi_decode;
+  reg [15:0]      axi_command_to_data_cycles;
+  reg             debug_mem_wr_sram_decode;
+  reg             debug_mem_rd_sram_decode;
+  reg             debug_regs_wr_sram_decode;
+  reg             debug_regs_rd_sram_decode;
 
   // General CPU interface signal equations
   assign RegBus_read_data_ucore = RegBus_read_data_dcore;
@@ -152,30 +224,55 @@ module soc_miner_regs (
            RegBus_address_valid_internal & RegBus_access_valid_internal ; 
 
 
-  assign control_full_read_data = control_go;
+  assign control_full_read_data = {control_go_read, 3'h0, control_go_write};
 
 
-  // Logic for control.go
+  // Logic for control.go_read
   // Instantiated in file "soc_miner_regs.rdl":10
-  assign control_go__write = valid_RegBus_write & control_decode;
+  assign control_go_read__write = valid_RegBus_write & control_decode;
 
-  assign control_go__sw_next = RegBus_write_data_dcore[0];
+  assign control_go_read__sw_next = RegBus_write_data_dcore[4];
 
-  assign control_go__swmod = control_go__write;
+  assign control_go_read__swmod = control_go_read__write;
 
-  assign control_go__field_next = 
-           ((control_go__swmod) 
-             ? control_go__sw_next 
-             : control_go_next); 
+  assign control_go_read__field_next = 
+           ((control_go_read__swmod) 
+             ? control_go_read__sw_next 
+             : control_go_read_next); 
 
   always @(posedge Clk ) 
   begin 
     if (RESET)
-      control_go <= 
+      control_go_read <= 
       1'h0; 
     else
-      control_go <= 
-      control_go__field_next; 
+      control_go_read <= 
+      control_go_read__field_next; 
+  end
+
+
+
+  // Logic for control.go_write
+  // Instantiated in file "soc_miner_regs.rdl":11
+  assign control_go_write__write = valid_RegBus_write & control_decode;
+
+  assign control_go_write__sw_next = RegBus_write_data_dcore[0];
+
+  assign control_go_write__swmod = control_go_write__write;
+
+  assign control_go_write__field_next = 
+           ((control_go_write__swmod) 
+             ? control_go_write__sw_next 
+             : control_go_write_next); 
+
+  always @(posedge Clk ) 
+  begin 
+    if (RESET)
+      control_go_write <= 
+      1'h0; 
+    else
+      control_go_write <= 
+      control_go_write__field_next; 
   end
 
 
@@ -263,11 +360,68 @@ module soc_miner_regs (
   end
 
 
-  always @( source_address_full_read_data or
+  assign axi_full_read_data = axi_command_to_data_cycles;
+
+
+  // Logic for axi.command_to_data_cycles
+  // Instantiated in file "soc_miner_regs.rdl":14
+  assign axi_command_to_data_cycles__write = valid_RegBus_write & axi_decode;
+
+  assign axi_command_to_data_cycles__sw_next = RegBus_write_data_dcore[15:0];
+
+  assign axi_command_to_data_cycles__swmod = axi_command_to_data_cycles__write;
+
+  assign axi_command_to_data_cycles__field_next = 
+           ((axi_command_to_data_cycles__swmod) 
+             ? axi_command_to_data_cycles__sw_next 
+             : axi_command_to_data_cycles); 
+
+  always @(posedge Clk ) 
+  begin 
+    if (RESET)
+      axi_command_to_data_cycles <= 
+      16'h0; 
+    else
+      axi_command_to_data_cycles <= 
+      axi_command_to_data_cycles__field_next; 
+  end
+
+
+  assign debug_mem_wr_sram_read = valid_RegBus_read & debug_mem_wr_sram_decode;
+
+  assign valid_RegBus_read = RegBus_xfer_valid_internal & RegBus_read_dcore;
+
+  assign debug_mem_wr_sram_address = RegBus_address_dcore[9:2];
+
+  assign debug_mem_rd_sram_read = valid_RegBus_read & debug_mem_rd_sram_decode;
+
+  assign debug_mem_rd_sram_address = RegBus_address_dcore[9:2];
+
+  assign debug_regs_wr_sram_read = 
+           valid_RegBus_read & debug_regs_wr_sram_decode; 
+
+  assign debug_regs_wr_sram_address = RegBus_address_dcore[9:2];
+
+  assign debug_regs_rd_sram_read = 
+           valid_RegBus_read & debug_regs_rd_sram_decode; 
+
+  assign debug_regs_rd_sram_address = RegBus_address_dcore[9:2];
+
+  always @( axi_full_read_data or
+           debug_regs_wr_sram_read_data or
+           debug_mem_rd_sram_access_complete or
+           source_address_full_read_data or
            RegBus_address_dcore or
            length_full_read_data or
            destination_address_full_read_data or
-           control_full_read_data ) begin
+           debug_mem_wr_sram_read_data or
+           debug_regs_rd_sram_read_data or
+           debug_regs_wr_sram_access_complete or
+           RegBus_read_dcore or
+           debug_regs_rd_sram_access_complete or
+           control_full_read_data or
+           debug_mem_rd_sram_read_data or
+           debug_mem_wr_sram_access_complete ) begin
 
     RegBus_address_valid_internal = 1'b0;
     RegBus_access_valid_internal = 1'b0;
@@ -276,14 +430,19 @@ module soc_miner_regs (
     source_address_decode = 1'b0;
     destination_address_decode = 1'b0;
     length_decode = 1'b0;
+    axi_decode = 1'b0;
+    debug_mem_wr_sram_decode = 1'b0;
+    debug_mem_rd_sram_decode = 1'b0;
+    debug_regs_wr_sram_decode = 1'b0;
+    debug_regs_rd_sram_decode = 1'b0;
 
-    case(RegBus_address_dcore)
+    casez(RegBus_address_dcore)
     // Register:     soc_miner_regs control
     // Full Address: 0x0 [0x0]
-    2'b00:
+    11'b00000000000:
       begin
         control_decode = 1'b1;
-        RegBus_read_data_dcore = { 31'h00000000, control_full_read_data };
+        RegBus_read_data_dcore = { 27'h0000000, control_full_read_data };
         RegBus_access_valid_internal = 1'b1;
         RegBus_address_valid_internal = 1'b1;
         RegBus_access_complete_valid_internal = 1'b1;
@@ -291,7 +450,7 @@ module soc_miner_regs (
 
     // Register:     soc_miner_regs source_address
     // Full Address: 0x4 [0x1]
-    2'b01:
+    11'b00000000001:
       begin
         source_address_decode = 1'b1;
         RegBus_read_data_dcore = { source_address_full_read_data, 2'h0 };
@@ -302,7 +461,7 @@ module soc_miner_regs (
 
     // Register:     soc_miner_regs destination_address
     // Full Address: 0x8 [0x2]
-    2'b10:
+    11'b00000000010:
       begin
         destination_address_decode = 1'b1;
         RegBus_read_data_dcore = { destination_address_full_read_data, 2'h0 };
@@ -313,13 +472,72 @@ module soc_miner_regs (
 
     // Register:     soc_miner_regs length
     // Full Address: 0xc [0x3]
-    2'b11:
+    11'b00000000011:
       begin
         length_decode = 1'b1;
         RegBus_read_data_dcore = length_full_read_data;
         RegBus_access_valid_internal = 1'b1;
         RegBus_address_valid_internal = 1'b1;
         RegBus_access_complete_valid_internal = 1'b1;
+      end
+
+    // Register:     soc_miner_regs axi
+    // Full Address: 0x10 [0x4]
+    11'b00000000100:
+      begin
+        axi_decode = 1'b1;
+        RegBus_read_data_dcore = { 16'h0000, axi_full_read_data };
+        RegBus_access_valid_internal = 1'b1;
+        RegBus_address_valid_internal = 1'b1;
+        RegBus_access_complete_valid_internal = 1'b1;
+      end
+
+    // Register:     soc_miner_regs debug_mem_wr_sram
+    // Full Address: 0x1000 - 0x13fc [0x400 - 0x4ff]
+    11'b100????????:
+      begin
+        debug_mem_wr_sram_decode = 1'b1;
+        RegBus_read_data_dcore = debug_mem_wr_sram_read_data;
+        RegBus_access_valid_internal = RegBus_read_dcore;
+        RegBus_address_valid_internal = 1'b1;
+        RegBus_access_complete_valid_internal = 
+          debug_mem_wr_sram_access_complete; 
+      end
+
+    // Register:     soc_miner_regs debug_mem_rd_sram
+    // Full Address: 0x1400 - 0x17fc [0x500 - 0x5ff]
+    11'b101????????:
+      begin
+        debug_mem_rd_sram_decode = 1'b1;
+        RegBus_read_data_dcore = debug_mem_rd_sram_read_data;
+        RegBus_access_valid_internal = RegBus_read_dcore;
+        RegBus_address_valid_internal = 1'b1;
+        RegBus_access_complete_valid_internal = 
+          debug_mem_rd_sram_access_complete; 
+      end
+
+    // Register:     soc_miner_regs debug_regs_wr_sram
+    // Full Address: 0x1800 - 0x1bfc [0x600 - 0x6ff]
+    11'b110????????:
+      begin
+        debug_regs_wr_sram_decode = 1'b1;
+        RegBus_read_data_dcore = debug_regs_wr_sram_read_data;
+        RegBus_access_valid_internal = RegBus_read_dcore;
+        RegBus_address_valid_internal = 1'b1;
+        RegBus_access_complete_valid_internal = 
+          debug_regs_wr_sram_access_complete; 
+      end
+
+    // Register:     soc_miner_regs debug_regs_rd_sram
+    // Full Address: 0x1c00 - 0x1ffc [0x700 - 0x7ff]
+    11'b111????????:
+      begin
+        debug_regs_rd_sram_decode = 1'b1;
+        RegBus_read_data_dcore = debug_regs_rd_sram_read_data;
+        RegBus_access_valid_internal = RegBus_read_dcore;
+        RegBus_address_valid_internal = 1'b1;
+        RegBus_access_complete_valid_internal = 
+          debug_regs_rd_sram_access_complete; 
       end
 
     default: RegBus_read_data_dcore = 32'h00000000;

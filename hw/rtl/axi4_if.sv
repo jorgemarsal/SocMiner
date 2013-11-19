@@ -25,16 +25,21 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
         logic [3:0]                 awcache  ;
         logic [2:0]                 awprot   ;  
         logic [3:0]                 awqos    ;  
+        //logic [3:0]                 awuser   ;  
+        //logic [3:0]                 awregion ;
+
         logic                       wvalid   ;
         logic                       wready   ;
         logic [DATA_WIDTH-1:0]      wdata    ;
         logic [(DATA_WIDTH/8)-1:0]  wstrb    ;
         logic                       wlast    ;
         logic [ID_WIDTH-1:0]        wid      ;
+
         logic                       bvalid   ;
         logic                       bready   ;
         logic [1:0]                 bresp    ;
         logic [ID_WIDTH-1:0]        bid      ;
+
         logic                       arvalid  ;
         logic                       arready  ;
         logic [ADDR_WIDTH-1:0]      araddr   ;
@@ -46,6 +51,9 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
         logic [3:0]                 arcache  ;
         logic [2:0]                 arprot   ; 
         logic [3:0]                 arqos   ; 
+        //logic [3:0]                 aruser   ;  
+        //logic [3:0]                 arregion ;
+
         logic                       rvalid     ;    
         logic                       rready     ;     
         logic [DATA_WIDTH-1:0]      rdata      ;     

@@ -1,0 +1,31 @@
+reg address_r {
+    field {hw=r; sw=rw;} address [31:2] = 30'h0;
+};
+
+reg length_r {
+    field {hw=r; sw=rw;} length [31:0] = 32'h0;
+};
+
+reg control_r {
+    field {hw=rw; sw=rw;} go_read [4:4] = 1'h0;
+    field {hw=rw; sw=rw;} go_write [0:0] = 1'h0;
+};
+reg axi_r {
+    field {hw=r; sw=rw;} command_to_data_cycles [15:0] = 16'h0;
+};
+reg word_r {
+    field {hw=w; sw=r;} word [31:0] = 32'h0;
+};
+
+addrmap soc_miner_regs {
+    control_r control @0x0;
+    address_r source_address @0x4;
+    address_r destination_address @0x8;
+    length_r length @0xc;
+    axi_r axi @0x10;
+    external word_r debug_mem_wr_sram[256] @0x1000;
+    external word_r debug_mem_rd_sram[256] @0x1400;
+    external word_r debug_regs_wr_sram[256] @0x1800;
+    external word_r debug_regs_rd_sram[256] @0x1c00;
+};
+

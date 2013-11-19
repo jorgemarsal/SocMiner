@@ -66,35 +66,35 @@ module soc_miner #(
 
 
 
-    input  logic                           s_regs_awvalid,                   
-    output logic                           s_regs_awready,                   
-    input  logic [REGS_ADDR_WIDTH-1:0]     s_regs_awaddr,   
-    input  logic [2:0]                     s_regs_awprot,                                          
-    input  logic                           s_regs_wvalid,                    
-    output logic                           s_regs_wready,                    
-    input  logic [REGS_DATA_WIDTH-1:0]     s_regs_wdata,    
-    input  logic [(REGS_DATA_WIDTH/8)-1:0] s_regs_wstrb,                             
-    output logic                           s_regs_bvalid,                    
-    input  logic                           s_regs_bready,                    
-    output logic [1:0]                     s_regs_bresp,                                           
-    input  logic                           s_regs_arvalid,                   
-    output logic                           s_regs_arready,                   
-    input  logic [REGS_ADDR_WIDTH-1:0]     s_regs_araddr,   
-    input  logic [2:0]                     s_regs_arprot,                                          
-    output logic                           s_regs_rvalid,                    
-    output logic                           s_regs_rlast,                    
-    input  logic                           s_regs_rready,                    
-    output logic [REGS_DATA_WIDTH-1:0]     s_regs_rdata,    
-    output logic [1:0]                     s_regs_rresp
+    input  logic                            s_regs_awvalid,                   
+    output logic                            s_regs_awready,                   
+    input  logic [REGS_ADDR_WIDTH-1:0]      s_regs_awaddr,   
+    input  logic [MEMORY_BUS_LEN_WIDTH-1:0] s_regs_awlen,                                          
+    input  logic                            s_regs_wvalid,                    
+    output logic                            s_regs_wready,                    
+    input  logic [REGS_DATA_WIDTH-1:0]      s_regs_wdata,    
+    input  logic [(REGS_DATA_WIDTH/8)-1:0]  s_regs_wstrb,                             
+    output logic                            s_regs_bvalid,                    
+    input  logic                            s_regs_bready,                    
+    output logic [1:0]                      s_regs_bresp,                                           
+    input  logic                            s_regs_arvalid,                   
+    output logic                            s_regs_arready,                   
+    input  logic [REGS_ADDR_WIDTH-1:0]      s_regs_araddr,   
+    input  logic [MEMORY_BUS_LEN_WIDTH-1:0] s_regs_arlen,                                          
+    output logic                            s_regs_rvalid,                    
+    output logic                            s_regs_rlast,                    
+    input  logic                            s_regs_rready,                    
+    output logic [REGS_DATA_WIDTH-1:0]      s_regs_rdata,    
+    output logic [1:0]                      s_regs_rresp
 
     );
 
-    
+
 
     /**
      *  interfaces
      */
-    regbus_if m_regbus_if(Clk, Rst_n);
+    regbus_if #(.ADDR_WIDTH(32),.DATA_WIDTH(32)) m_regbus_if(Clk, Rst_n);
     
 (* mark_debug = "true" *)  wire        addr_valid;
 (* mark_debug = "true" *)  wire [31:0] reg_addr;
@@ -123,7 +123,7 @@ module soc_miner #(
     assign m_axi4lite_if.awvalid = s_regs_awvalid;
     assign s_regs_awready = m_axi4lite_if.awready;
     assign m_axi4lite_if.awaddr = s_regs_awaddr;
-    assign m_axi4lite_if.awprot = s_regs_awprot;
+    assign m_axi4lite_if.awlen = s_regs_awlen;
     assign m_axi4lite_if.wvalid = s_regs_wvalid;
     assign s_regs_wready = m_axi4lite_if.wready;
     assign m_axi4lite_if.wdata = s_regs_wdata;
@@ -134,7 +134,7 @@ module soc_miner #(
     assign m_axi4lite_if.arvalid = s_regs_arvalid;
     assign s_regs_arready = m_axi4lite_if.arready;
     assign m_axi4lite_if.araddr = s_regs_araddr;
-    assign m_axi4lite_if.arprot = s_regs_arprot;
+    assign m_axi4lite_if.arlen = s_regs_arlen;
     assign s_regs_rvalid = m_axi4lite_if.rvalid;
     assign s_regs_rlast = m_axi4lite_if.rlast;
     assign m_axi4lite_if.rready = s_regs_rready;
@@ -188,36 +188,63 @@ module soc_miner #(
      *  wires
      */
 
-(* mark_debug = "true" *)    logic go;      //start block operation
-(* mark_debug = "true" *)    logic go_next;
+(* mark_debug = "true" *)    logic go_read;      //start block operation
+(* mark_debug = "true" *)    logic go_read_next;
+(* mark_debug = "true" *)    logic go_write;      //start block operation
+(* mark_debug = "true" *)    logic go_write_next;
 
 (* mark_debug = "true" *)    logic [29:0] source_address;      //pointer to source data in dram (aligned to 4bytes)
 (* mark_debug = "true" *)    logic [29:0] destination_address; //pointer to destination data in dram (aligned to 4bytes)
 (* mark_debug = "true" *)    logic [31:0] length;              //length of data in dram
-
+(* mark_debug = "true" *)    logic [15:0] axi_command_to_data_cycles;
 
     /**
      * Generate a single read memory access
      */
+
+    sram_rd_if #(.ADDR_WIDTH(32), .DATA_WIDTH(64)) debug_mem_wr_read_sram_if(Clk,Rst_n);
+//    sram_wr_if #(.ADDR_WIDTH(32), .DATA_WIDTH(64)) debug_mem_wr_write_sram_if();
+
+    sram_rd_if #(.ADDR_WIDTH(32), .DATA_WIDTH(64)) debug_mem_rd_read_sram_if(Clk,Rst_n);
+    //sram_wr_if #(.ADDR_WIDTH(32), .DATA_WIDTH(64)) debug_mem_rd_write_sram_if();
+
+    sram_rd_if #(.ADDR_WIDTH(32), .DATA_WIDTH(64)) debug_regs_wr_read_sram_if(Clk,Rst_n);
+    //sram_wr_if #(.ADDR_WIDTH(32), .DATA_WIDTH(64)) debug_regs_wr_write_sram_if();
+
+    sram_rd_if #(.ADDR_WIDTH(32), .DATA_WIDTH(64)) debug_regs_rd_read_sram_if(Clk,Rst_n);
+    //sram_wr_if #(.ADDR_WIDTH(32), .DATA_WIDTH(64)) debug_regs_rd_write_sram_if();
+
     simple_memory_access I_SIMPLE_MEMORY_ACCESS(
-        .Clk                 (Clk                 ),
-        .Rst_n               (Rst_n               ),
-        .Go                  (go                  ),
-        .source_address      (source_address      ), 
-        .destination_address (destination_address ), 
-        .length              (length              ), 
-        .m_axi4_if           (m_axi4_if           )
+        .Clk                        (Clk                       ),
+        .Rst_n                      (Rst_n                     ),
+        .GoRead                     (go_read                   ),
+        .GoWrite                    (go_write                  ),
+        .source_address             (source_address            ), 
+        .destination_address        (destination_address       ), 
+        .length                     (length                    ),
+        .axi_command_to_data_cycles (axi_command_to_data_cycles),
+        .m_axi4_if                  (m_axi4_if                 ),
+        .debug_mem_wr_read_sram_if  (debug_mem_wr_read_sram_if ),
+        //.debug_mem_wr_write_sram_if        (debug_mem_wr_write_sram_if       ),
+        .debug_mem_rd_read_sram_if  (debug_mem_rd_read_sram_if )
+        //.debug_mem_rd_write_sram_if        (debug_mem_rd_write_sram_if       )
     );
     /**
      * Auto clear. When sw writes a 1 to this field
      * clear it the next cycle
      */
 
-    auto_clear I_AUTO_CLEAR(
+    auto_clear I_GO_READ_AUTO_CLEAR(
         .Clk        (Clk),
         .Rst_n      (Rst_n),
-        .In         (go),
-        .Out        (go_next)
+        .In         (go_read),
+        .Out        (go_read_next)
+        );
+    auto_clear I_GO_WRITE_AUTO_CLEAR(
+        .Clk        (Clk),
+        .Rst_n      (Rst_n),
+        .In         (go_write),
+        .Out        (go_write_next)
         );
 
     /**
@@ -227,10 +254,18 @@ module soc_miner #(
         .Clk        (Clk),
         .Rst_n      (Rst_n),
         .Axi4lite_if(m_axi4lite_if),
-        .Regbus_if  (m_regbus_if)
+        .Regbus_if  (m_regbus_if),
+        .debug_regs_wr_read_sram_if         (debug_regs_wr_read_sram_if        ),
+        //.debug_regs_wr_write_sram_if        (debug_regs_wr_write_sram_if       ),
+        .debug_regs_rd_read_sram_if         (debug_regs_rd_read_sram_if        )
+        //.debug_regs_rd_write_sram_if        (debug_regs_rd_write_sram_if       )
     );
 
 
+    logic rd_en0_ff;
+    logic rd_en1_ff;
+    logic rd_en2_ff;
+    logic rd_en3_ff;
     /**
      *  Register module
      */
@@ -240,16 +275,54 @@ module soc_miner #(
         .RegBus_read                (~m_regbus_if.reg_write),
         .RegBus_val                 (m_regbus_if.addr_valid),
         .RegBus_write_data          (m_regbus_if.reg_wdata),
-        .RegBus_address             (m_regbus_if.reg_addr[3:2]),
-        .control_go_next            (go_next),
+        .RegBus_address             (m_regbus_if.reg_addr[31:2]),
+        .control_go_read_next            (go_read_next),
+        .control_go_write_next            (go_write_next),
                                     
         .RegBus_read_data           (m_regbus_if.reg_rdata),
         .RegBus_access_complete     (m_regbus_if.reg_ready),
-        .control_go                 (go),
+        .control_go_read                 (go_read),
+        .control_go_write                 (go_write),
         .source_address_address     (source_address),
         .destination_address_address(destination_address),
-        .length_length              (length)
+        .length_length              (length),
+        .axi_command_to_data_cycles(axi_command_to_data_cycles),
+        //inputs
+        .debug_mem_wr_sram_read_data        (debug_mem_wr_read_sram_if.rdData),
+        .debug_mem_wr_sram_access_complete  (rd_en0_ff),
+        .debug_mem_rd_sram_read_data        (debug_mem_rd_read_sram_if.rdData),
+        .debug_mem_rd_sram_access_complete  (rd_en1_ff),
+        .debug_regs_wr_sram_read_data       (debug_regs_wr_read_sram_if.rdData),
+        .debug_regs_wr_sram_access_complete (rd_en2_ff),
+        .debug_regs_rd_sram_read_data       (debug_regs_rd_read_sram_if.rdData),
+        .debug_regs_rd_sram_access_complete (rd_en3_ff),
+
+        //outputs
+        .debug_mem_wr_sram_read             (debug_mem_wr_read_sram_if.rdEn),
+        .debug_mem_wr_sram_address          (debug_mem_wr_read_sram_if.rdAddr[31:2]),
+        .debug_mem_rd_sram_read             (debug_mem_rd_read_sram_if.rdEn),
+        .debug_mem_rd_sram_address          (debug_mem_rd_read_sram_if.rdAddr[31:2]),
+        .debug_regs_wr_sram_read            (debug_regs_wr_read_sram_if.rdEn),
+        .debug_regs_wr_sram_address         (debug_regs_wr_read_sram_if.rdAddr[31:2]),
+        .debug_regs_rd_sram_read            (debug_regs_rd_read_sram_if.rdEn),
+        .debug_regs_rd_sram_address         (debug_regs_rd_read_sram_if.rdAddr[31:2])
+
     );
+
+    always_ff @(posedge Clk or negedge Rst_n) begin
+        if (!Rst_n) begin
+            rd_en0_ff <= 1'b0;
+            rd_en1_ff <= 1'b0;
+            rd_en2_ff <= 1'b0;
+            rd_en3_ff <= 1'b0;
+        end
+        else begin
+            rd_en0_ff <= debug_mem_wr_read_sram_if.rdEn;    
+            rd_en1_ff <= debug_mem_rd_read_sram_if.rdEn;    
+            rd_en2_ff <= debug_regs_wr_read_sram_if.rdEn;    
+            rd_en3_ff <= debug_regs_rd_read_sram_if.rdEn;    
+        end
+    end
 
 endmodule
 

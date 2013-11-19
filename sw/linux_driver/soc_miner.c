@@ -121,7 +121,13 @@ int32_t (*ioctlFunctionArray[])(IoctlArgument ioctlArgument) =
 #define SOURCE_ADDRESS_REG 0x4
 #define DESTINATION_ADDRESS_REG 0x8
 #define LENGTH_REG 0xC
+#define AXI_COMMAND_TO_DATA_CYCLES_REG 0x10
 #define GO_REG 0x0
+
+#define DEBUG_MEM_WRITES_SRAM_ADDR 0x1000
+#define DEBUG_MEM_READS_SRAM_ADDR 0x1400
+#define DEBUG_REGS_WRITES_SRAM_ADDR 0x1800
+#define DEBUG_REGS_READS_SRAM_ADDR 0x1c00
 
 static  int32_t launchDma(uint32_t              write,
                               uint32_t              instance,
@@ -167,26 +173,42 @@ static  int32_t launchDma(uint32_t              write,
         if(write) {
             //if we want to write to the device that's a read dma from the point of view of the device
             printk(KERN_INFO "it's a write, setting reg source addr");
-            reg = pciaddr & 0xFFFFFFFFUL;
+            reg = pciaddr & 0xFFFFFFFFUL;            
             socWriteRegister32(0,SOURCE_ADDRESS_REG,1,&reg);
-            reg = 0;
+            reg = 0x64737400;//dst in ascii
             socWriteRegister32(0,DESTINATION_ADDRESS_REG,1,&reg);
+
+            //launch dma
+            reg = 0x10;
+            #if 1
+                socWriteRegister32(0,GO_REG,1,&reg);
+            #endif
         }
         else {
             //if we want to read from the device, that's a write dma from the point of view of the device
             printk(KERN_INFO "it's a read, setting reg desti addr");
+
+            reg = 8;
+            socWriteRegister32(0,AXI_COMMAND_TO_DATA_CYCLES_REG,1,&reg);
+            reg = 0x6c656e00; //len is ascii
+            //reg = pciaddr & 0xFFFFFFFFUL;
+            socWriteRegister32(0,LENGTH_REG,1,&reg); // wdata takes its value from the length register
+
             reg = pciaddr & 0xFFFFFFFFUL;
             socWriteRegister32(0,DESTINATION_ADDRESS_REG,1,&reg);
-            reg = 0;
+            reg = 0x73726300; //"src " in ascii
             socWriteRegister32(0,SOURCE_ADDRESS_REG,1,&reg);
 
+            //launch dma
+            reg = 0x01;
+            #if 1
+                socWriteRegister32(0,GO_REG,1,&reg);
+            #endif
+
         }
+
 #endif
-        //launch dma
-        reg = 0x1;
-#if 1
-        socWriteRegister32(0,GO_REG,1,&reg);
-#endif
+
 
         deviceAddress += size;
         /*
@@ -233,6 +255,7 @@ static int32_t socDma(uint32_t         write,
  //   uint32_t paddress, reg;
 
     struct sg_table sgTable;
+    uint32_t reg;
 
 //    uint8_t *buffer;
 
@@ -554,6 +577,37 @@ static int32_t socDma(uint32_t         write,
                  sgNumTotal,
                  write ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
 
+//    dma_sync_sg_for_cpu(&(soc_miner_dev->pdev->dev),
+//                 sgTable.sgl,
+//                 sgNumTotal,
+//                 write ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
+
+
+    //print read buffer
+    printk(KERN_INFO "read buffer:\n");
+    for(i = 0; i < 8; i++) {
+        printk(KERN_INFO "0x%02x\n", hostAddress[i]);
+    }
+
+#if 0
+    printk(KERN_INFO "DEBUG_MEM_WRITES_SRAM_ADDR:\n");
+    for(i = 0; i < 8; i++) {
+        res = socReadRegister32(0,DEBUG_MEM_WRITES_SRAM_ADDR+i,1,&reg);
+        printk(KERN_INFO "@0x%x -> addr: 0x%x len: 0x%x\n", DEBUG_MEM_WRITES_SRAM_ADDR+i, (reg & 0xfffffff0), reg & 0x0000000f);
+    }
+    printk(KERN_INFO "DEBUG_MEM_READS_SRAM_ADDR:\n");
+    for(i = 0; i < 8; i++) {
+        res = socReadRegister32(0,DEBUG_MEM_READS_SRAM_ADDR+i,1,&reg);
+        printk(KERN_INFO "@0x%x -> addr: 0x%x len: 0x%x\n", DEBUG_MEM_READS_SRAM_ADDR+i, (reg & 0xfffffff0), reg & 0x0000000f);
+    }
+    printk(KERN_INFO "DEBUG_REGS_WRITES_SRAM_ADDR:\n");
+    for(i = 0; i < 8; i++) {
+        res = socReadRegister32(0,DEBUG_REGS_WRITES_SRAM_ADDR+i,1,&reg);
+        printk(KERN_INFO "@0x%x -> addr: 0x%x len: 0x%x\n", DEBUG_REGS_WRITES_SRAM_ADDR+i, (reg & 0xfffffff0), reg & 0x0000000f);
+    }
+
+#endif
+
     /*
      * Release the pages from the page cache.
      */
@@ -635,6 +689,7 @@ int32_t socWriteRegister32 (int32_t asicId,
 
         printk(KERN_INFO "Writing 0x%x to address 0x%x\n", value[i], address + i);
         iowrite32(value[i], soc_miner_dev->dev_virtaddr + address + i);
+        wmb();
         printk(KERN_INFO "Written!\n");
     }
     return 0;

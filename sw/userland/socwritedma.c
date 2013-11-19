@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "soc_api.h"
 //#include "FileWriter.h"
 //#include "FileReader.h"
@@ -37,13 +38,18 @@ int main(int argc, char *argv[])
         return res;
     }
 
-    uint8_t *buffer = (uint8_t *)malloc(size);
+    uint32_t bytesInAPage = getpagesize();
+    printf("bytesInAPage: %d\n", bytesInAPage);
+    //uint8_t *buffer = (uint8_t *)malloc(size);
+    uint8_t *buffer;
+    posix_memalign((void **)&buffer, bytesInAPage, size);
 
     if(!buffer) {
 	    printf("unable to allocate buffer of size %d\n", size);
 	    return 10;
     }
-    for(i = 0; i < 8; i++) buffer[i] = 7-i;
+    //for(i = 0; i < 8; i++) buffer[i] = 7-i;
+    for(i = 0; i < 8; i++) buffer[i] = 0x66;
     for(i = 0; i < 8; i++)printf("0x%02x", buffer[i]);
 
     //PreciseTimer timer;

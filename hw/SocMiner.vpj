@@ -109,12 +109,15 @@
             <F N="rtl/axi4_if.sv"/>
             <F N="rtl/axi4lite2regbus.sv"/>
             <F N="rtl/axi4lite_if.sv"/>
+            <F N="rtl/debug_sram.sv"/>
             <F N="rtl/regbus2axi4lite.sv"/>
             <F N="rtl/regbus_if.sv"/>
             <F N="rtl/simple_memory_access.sv"/>
             <F N="rtl/soc_miner.sv"/>
             <F N="rtl/soc_miner_regs.v"/>
             <F N="rtl/soc_miner_wrapper.v"/>
+            <F N="rtl/sram_rd_if.sv"/>
+            <F N="rtl/sram_wr_if.sv"/>
         </Folder>
         <Folder Name="../syn">
             <Folder Name="soc_miner_io">

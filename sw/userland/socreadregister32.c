@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     }
     char *ptr;
     uint32_t address = strtoul(argv[2], &ptr, 16);
-    printf("reading from addr: 0x%x\n", address);
+    //printf("reading from addr: 0x%x\n", address);
     //uint32_t value   = strol(argv[2], &ptr, 0);
     uint32_t value = 0xbabeface;
     //printf("addr: 0x%x value: 0x%x\n", address,value);
