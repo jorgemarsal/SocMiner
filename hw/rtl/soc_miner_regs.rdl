@@ -7,6 +7,8 @@ reg length_r {
 };
 
 reg control_r {
+//    field {hw=rw; sw=rw;} go_read_acp [12:12] = 1'h0;
+//    field {hw=rw; sw=rw;} go_write_acp [8:8] = 1'h0;
     field {hw=rw; sw=rw;} go_read [4:4] = 1'h0;
     field {hw=rw; sw=rw;} go_write [0:0] = 1'h0;
 };
@@ -16,6 +18,9 @@ reg axi_r {
 reg word_r {
     field {hw=w; sw=r;} word [31:0] = 32'h0;
 };
+reg acp_r {
+    field {hw=r; sw=rw;} acp_en [0:0] = 1'h0;
+};
 
 addrmap soc_miner_regs {
     control_r control @0x0;
@@ -23,6 +28,7 @@ addrmap soc_miner_regs {
     address_r destination_address @0x8;
     length_r length @0xc;
     axi_r axi @0x10;
+    acp_r acp @0x14;
     external word_r debug_mem_wr_sram[256] @0x1000;
     external word_r debug_mem_rd_sram[256] @0x1400;
     external word_r debug_regs_wr_sram[256] @0x1800;

@@ -11,6 +11,7 @@
 #include <linux/cdev.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmapool.h>
+#include <linux/interrupt.h>
 
 //#include <linux/mutex.h>
 #include <linux/semaphore.h>
@@ -25,6 +26,7 @@
 
 #include <linux/pagemap.h>
 #include <linux/delay.h>
+#include <linux/wait.h>
 
 #include "soc_miner.h"
 #include "soc_miner_ioctl.h"
@@ -36,14 +38,123 @@
 
 
 
+#define SOC_MINER_IRQ 91
 #define SOC_MINER_MAJOR 234U
 #define SOC_MINER_MINOR 0
 #define MODULE_NAME "soc_miner"
 #define SOC_DEVICE_NAME        "soc_miner"
 //#define SOC_FULL_DEVICE_NAME   "/dev/soc_miner"
 
+#define SOC_NOWAIT              (int32_t)(0)
+#define SOC_WAIT_FOREVER        (int32_t)(-1)
+
+/* Convert from microseconds to jiffies
+ */
+    #define microsToJiffies(m)  ((m)/(1000000/HZ))
+
+/* Convert from jiffies to microseconds
+ */
+    #define jiffiesToMicros(j)  ((j)*(1000000/HZ))
+
 
 //module_param(SOC_MINER_MAJOR, int, 0);
+
+struct soc_semaphore {
+    /* A wait queue to perform non-active waits...
+     */
+    wait_queue_head_t   wait_q;
+
+    /* The number of times that the sem could be taken...
+     */
+    atomic_t            count;
+
+    /* The number of threads waiting for this semaphore...
+     */
+    atomic_t            sleepers;
+
+    /* 1 if is a binary semaphore, 0 otherwise
+     */
+    atomic_t            binary;
+
+    /* 1 if the semaphore may be interruptible
+     */
+    atomic_t            interruptible;
+};
+
+void soc_sem_give(struct soc_semaphore *sem) {
+
+    printk(KERN_INFO "Wake up semaphore, count --> %d\n",atomic_read(&sem->count));
+
+    if ( (atomic_read(&sem->binary)==1) )
+    {
+        /* If the semaphore is binary set bit
+         */
+        atomic_set(&sem->count, 1);
+    }
+    else
+    {
+        /* Increment the sem counter
+         */
+        while(atomic_inc_return(&sem->count) <= 0);
+    }
+
+    /* Wake up the the waiting threads
+     */
+    if(atomic_read(&sem->interruptible))
+        wake_up_interruptible(&sem->wait_q);
+    else
+        wake_up(&sem->wait_q);
+
+}  /* RedOSSemGive() */
+
+
+
+
+int soc_sem_take(struct soc_semaphore *sem,int32_t   timeoutInUSec)
+{
+    long         timeout = 0;
+
+
+    printk(KERN_INFO "Try to take the semaphore, count --> %d sleepers --> %d \n",atomic_read(&sem->count),atomic_read(&sem->sleepers));
+
+    switch(timeoutInUSec)
+    {
+        case SOC_NOWAIT:
+            break;
+        case SOC_WAIT_FOREVER:
+            timeout = MAX_SCHEDULE_TIMEOUT;
+            break;
+        default:
+            timeout = microsToJiffies(timeoutInUSec);
+            break;
+    }
+
+    do
+    {
+        if(timeout > 0)
+        {
+            atomic_inc(&sem->sleepers);
+            printk(KERN_INFO "Going to wait for %ld ms for the semaphore, count --> %d sleepers --> %d \n",timeoutInUSec/1000, atomic_read(&sem->count),atomic_read(&sem->sleepers));
+
+            if(atomic_read(&sem->interruptible))
+                timeout = wait_event_interruptible_timeout(sem->wait_q, atomic_read(&sem->count) > 0, timeout);
+            else
+                timeout = wait_event_timeout(sem->wait_q, atomic_read(&sem->count) > 0, timeout);
+
+            atomic_dec(&sem->sleepers);
+        }
+        if(atomic_read(&sem->count) > 0)
+           if(atomic_dec_return(&sem->count) >= 0) // take semaphore
+           {
+               printk(KERN_INFO "Has been taken the semaphore , count --> %d sleepers --> %d \n",atomic_read(&sem->count),atomic_read(&sem->sleepers));
+               return 0;
+           }
+   } while(timeout > 0);
+
+   return  -1;
+}  /* RedOSSemTake */
+
+
 
 
 struct soc_miner_dev {
@@ -52,6 +163,8 @@ struct soc_miner_dev {
         struct semaphore sem; /* mutual exclusion semaphore */
         struct cdev cdev;
         struct platform_device *pdev;
+
+        struct soc_semaphore semaphore;
 
         /* Hardware device constants */
         u32 dev_physaddr;
@@ -118,6 +231,18 @@ int32_t (*ioctlFunctionArray[])(IoctlArgument ioctlArgument) =
     0
 };
 
+/*
+ * Interrupt handling
+ */
+
+static irqreturn_t isr(int              irq,
+                       void           * dev_id) {
+
+    printk(KERN_INFO "handling interrupt\n");
+    soc_sem_give(&soc_miner_dev->semaphore);
+    return IRQ_HANDLED;
+}
+
 #define SOURCE_ADDRESS_REG 0x4
 #define DESTINATION_ADDRESS_REG 0x8
 #define LENGTH_REG 0xC
@@ -138,6 +263,7 @@ static  int32_t launchDma(uint32_t              write,
                               uint32_t            * dest)
 {
 
+    int res;
     dma_addr_t          pciaddr;
     uint32_t            size;
     uint32_t reg;
@@ -209,6 +335,16 @@ static  int32_t launchDma(uint32_t              write,
 
 #endif
 
+        res = soc_sem_take(&soc_miner_dev->semaphore, 1000000); //1 sec
+        if (res != 0){
+            printk(KERN_ERR "semaphore error or timeout has been exceded: inum = %d\n",
+                  SOC_MINER_IRQ);
+            return -1;
+        }
+        else{
+            printk(KERN_DEBUG "semaphore taken\n");
+        }
+
 
         deviceAddress += size;
         /*
@@ -255,7 +391,7 @@ static int32_t socDma(uint32_t         write,
  //   uint32_t paddress, reg;
 
     struct sg_table sgTable;
-    uint32_t reg;
+    //uint32_t reg;
 
 //    uint8_t *buffer;
 
@@ -566,6 +702,7 @@ static int32_t socDma(uint32_t         write,
             printk(KERN_ERR "launch DMA Failed sgList = %p sgNumTotal= 0x%x\n",
                    sgListIndex,
                    sgNumTotal);
+            break;
         }
     }
 
@@ -920,7 +1057,7 @@ long soc_miner_ioctl(
     result = ioctlFunctionArray[cmd](ioctlArgument);
 
 
-    return 0;
+    return result;
 }
 
 
@@ -1029,6 +1166,9 @@ static int soc_miner_remove(struct platform_device *pdev)
                 release_mem_region(soc_miner_dev->dev_physaddr,
                         soc_miner_dev->dev_addrsize);
         }
+
+        free_irq(SOC_MINER_IRQ,soc_miner_dev);
+
 #if 0
         /* Free the PL330 buffer client data descriptors */
         if (soc_miner_dev->client_data) {
@@ -1065,6 +1205,23 @@ static int soc_miner_probe(struct platform_device *pdev)
                 return -ENOMEM;
         }
         memset(soc_miner_dev, 0, sizeof(struct soc_miner_dev));
+
+        /* Initialize the semaphore structure fields..
+         */
+        init_waitqueue_head(&soc_miner_dev->semaphore.wait_q);
+        atomic_set(&soc_miner_dev->semaphore.count,1);
+        atomic_set(&soc_miner_dev->semaphore.sleepers,0);
+        atomic_set(&soc_miner_dev->semaphore.binary,1);
+        atomic_set(&soc_miner_dev->semaphore.interruptible,1);
+
+        /*
+         * Binary semaphores are initially given. Let's take
+         * the sempahore so that interruptWait actually
+         * blocks.
+         */
+        soc_sem_take(&soc_miner_dev->semaphore, SOC_NOWAIT);
+
+
 
         /* Get our device properties from the device tree, if they exist */
         if (pdev->dev.of_node) {
@@ -1167,6 +1324,15 @@ static int soc_miner_probe(struct platform_device *pdev)
 #endif
         dev_info(&pdev->dev, "added soc_miner successfully\n");
 
+        status = request_irq(SOC_MINER_IRQ,
+                             isr,
+                             IRQF_SHARED,
+                             "soc_miner",
+                             (void *) soc_miner_dev);
+        if(status) {
+            printk(KERN_INFO "Cannot get irq %d, res: %d\n", SOC_MINER_IRQ, status);
+//            goto fail;
+        }
         return 0;
 
         fail:

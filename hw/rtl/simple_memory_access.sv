@@ -16,9 +16,12 @@ module simple_memory_access(
     //sram_wr_if.master_mp debug_mem_wr_write_sram_if ,  
     sram_rd_if.slave_mp debug_mem_rd_read_sram_if  ,  
     //sram_wr_if.master_mp debug_mem_rd_write_sram_if ,
-    axi4_if.master_mp m_axi4_if
+    axi4_if.master_mp m_axi4_if,
+    output logic Interrupt
     );
 
+    //send interrupt after reading or writing a word
+    assign Interrupt = (m_axi4_if.bvalid && m_axi4_if.bready) || (m_axi4_if.rvalid && m_axi4_if.rready);
     /*
      * debug sram for read accesses
      */

@@ -54,6 +54,13 @@ int main(int argc, char *argv[])
 
     //PreciseTimer timer;
     res = socDmaWrite(fileDesc_, 0,address,size, buffer,0);
+#if 1
+    if(res) {
+        printf("error in socdmaread\n");
+        if (fileDesc_) close(fileDesc_);
+        return res;
+    }						    
+#endif
     //res = 0;
     //double seconds = timer.elapsed();
     //printf("dma -> %f Mbytes/s\n", size/seconds/1024.0/1024.0);

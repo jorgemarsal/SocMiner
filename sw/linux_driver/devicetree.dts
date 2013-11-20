@@ -32,6 +32,8 @@
                 soc_miner@0x43c00000 {
 			compatible = "soc_miner";
 			reg = <0x43c00000 0x10000>;
+			interrupts = <0 59 1>;
+			interrupt-parent = <0x1>;
 
                 };
 		intc@f8f01000 {

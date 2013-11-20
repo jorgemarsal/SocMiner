@@ -128,6 +128,50 @@ wire [5:0] S00_AXI_RID;
 (* mark_debug = "true" *) wire [7:0] S00_AXI_WSTRB;
 (* mark_debug = "true" *) wire [0:0] S00_AXI_WVALID;
 
+wire [31:0] S_AXI_ACP_ARADDR;                   
+wire [ 1:0] S_AXI_ACP_ARBURST;                  
+wire [ 3:0] S_AXI_ACP_ARCACHE;                  
+wire [ 2:0] S_AXI_ACP_ARID;                     
+wire [ 3:0] S_AXI_ACP_ARLEN;                    
+wire [ 1:0] S_AXI_ACP_ARLOCK;                   
+wire [ 2:0] S_AXI_ACP_ARPROT;                   
+wire [ 3:0] S_AXI_ACP_ARQOS;                    
+wire        S_AXI_ACP_ARREADY;                  
+wire [2:0]  S_AXI_ACP_ARSIZE;                   
+wire [4:0]  S_AXI_ACP_ARUSER;                   
+wire        S_AXI_ACP_ARVALID;                  
+wire [31:0] S_AXI_ACP_AWADDR;                   
+wire [1:0]  S_AXI_ACP_AWBURST;                  
+wire [3:0]  S_AXI_ACP_AWCACHE;                  
+wire [2:0]  S_AXI_ACP_AWID;                     
+wire [3:0]  S_AXI_ACP_AWLEN;                    
+wire [1:0]  S_AXI_ACP_AWLOCK;                   
+wire [2:0]  S_AXI_ACP_AWPROT;                   
+wire [3:0]  S_AXI_ACP_AWQOS;                    
+wire        S_AXI_ACP_AWREADY;                  
+wire [2:0]  S_AXI_ACP_AWSIZE;                   
+wire [4:0]  S_AXI_ACP_AWUSER;                   
+wire        S_AXI_ACP_AWVALID;                  
+wire  [2:0] S_AXI_ACP_BID;                      
+wire        S_AXI_ACP_BREADY;                   
+wire  [1:0] S_AXI_ACP_BRESP;                    
+wire        S_AXI_ACP_BVALID;                   
+wire  [63:0]S_AXI_ACP_RDATA;                    
+wire  [2:0] S_AXI_ACP_RID;                      
+wire        S_AXI_ACP_RLAST;                    
+wire        S_AXI_ACP_RREADY;                   
+wire  [1:0] S_AXI_ACP_RRESP;                    
+wire        S_AXI_ACP_RVALID;                   
+wire [63:0] S_AXI_ACP_WDATA;                    
+wire [2:0]  S_AXI_ACP_WID;                      
+wire        S_AXI_ACP_WLAST;                    
+wire        S_AXI_ACP_WREADY;                   
+wire [7:0]  S_AXI_ACP_WSTRB;                    
+wire        S_AXI_ACP_WVALID;                   
+
+
+(* mark_debug = "true" *) wire [15:0] interrupts;   
+
 
 design_1_wrapper I_SOC_MINER_IO_WRAPPER(
     .FCLK_CLK0(ACLK),
@@ -228,8 +272,82 @@ design_1_wrapper I_SOC_MINER_IO_WRAPPER(
     .S_AXI_HP0_wlast(S00_AXI_WLAST),
     .S_AXI_HP0_wready(S00_AXI_WREADY),
     .S_AXI_HP0_wstrb(S00_AXI_WSTRB),
-    .S_AXI_HP0_wvalid(S00_AXI_WVALID)
+    .S_AXI_HP0_wvalid(S00_AXI_WVALID),
+    //ACP
+    .S_AXI_ACP_araddr (S_AXI_ACP_araddr ),
+    .S_AXI_ACP_arburst(S_AXI_ACP_arburst),
+    .S_AXI_ACP_arcache(S_AXI_ACP_arcache),
+    .S_AXI_ACP_arid   (S_AXI_ACP_arid   ),
+    .S_AXI_ACP_arlen  (S_AXI_ACP_arlen  ),
+    .S_AXI_ACP_arlock (S_AXI_ACP_arlock ),
+    .S_AXI_ACP_arprot (S_AXI_ACP_arprot ),
+    .S_AXI_ACP_arqos  (S_AXI_ACP_arqos  ),
+    .S_AXI_ACP_arready(S_AXI_ACP_arready),
+    .S_AXI_ACP_arsize (S_AXI_ACP_arsize ),
+    .S_AXI_ACP_aruser (S_AXI_ACP_aruser ),
+    .S_AXI_ACP_arvalid(S_AXI_ACP_arvalid),
+    .S_AXI_ACP_awaddr (S_AXI_ACP_awaddr ),
+    .S_AXI_ACP_awburst(S_AXI_ACP_awburst),
+    .S_AXI_ACP_awcache(S_AXI_ACP_awcache),
+    .S_AXI_ACP_awid   (S_AXI_ACP_awid   ),
+    .S_AXI_ACP_awlen  (S_AXI_ACP_awlen  ),
+    .S_AXI_ACP_awlock (S_AXI_ACP_awlock ),
+    .S_AXI_ACP_awprot (S_AXI_ACP_awprot ),
+    .S_AXI_ACP_awqos  (S_AXI_ACP_awqos  ),
+    .S_AXI_ACP_awready(S_AXI_ACP_awready),
+    .S_AXI_ACP_awsize (S_AXI_ACP_awsize ),
+    .S_AXI_ACP_awuser (S_AXI_ACP_awuser ),
+    .S_AXI_ACP_awvalid(S_AXI_ACP_awvalid),
+    .S_AXI_ACP_bid    (S_AXI_ACP_bid    ),
+    .S_AXI_ACP_bready (S_AXI_ACP_bready ),
+    .S_AXI_ACP_bresp  (S_AXI_ACP_bresp  ),
+    .S_AXI_ACP_bvalid (S_AXI_ACP_bvalid ),
+    .S_AXI_ACP_rdata  (S_AXI_ACP_rdata  ),
+    .S_AXI_ACP_rid    (S_AXI_ACP_rid    ),
+    .S_AXI_ACP_rlast  (S_AXI_ACP_rlast  ),
+    .S_AXI_ACP_rready (S_AXI_ACP_rready ),
+    .S_AXI_ACP_rresp  (S_AXI_ACP_rresp  ),
+    .S_AXI_ACP_rvalid (S_AXI_ACP_rvalid ),
+    .S_AXI_ACP_wdata  (S_AXI_ACP_wdata  ),
+    .S_AXI_ACP_wid    (S_AXI_ACP_wid    ),
+    .S_AXI_ACP_wlast  (S_AXI_ACP_wlast  ),
+    .S_AXI_ACP_wready (S_AXI_ACP_wready ),
+    .S_AXI_ACP_wstrb  (S_AXI_ACP_wstrb  ),
+    .S_AXI_ACP_wvalid (S_AXI_ACP_wvalid ),
+    .In0  (interrupts[0]),
+    .In1  (interrupts[1]),  
+    .In2  (interrupts[2]),
+    .In3  (interrupts[3]),
+    .In4  (interrupts[4]),
+    .In5  (interrupts[5]),
+    .In6  (interrupts[6]),
+    .In7  (interrupts[7]),
+    .In8  (interrupts[8]),
+    .In9  (interrupts[9]),
+    .In10 (interrupts[10]),
+    .In11 (interrupts[11]),
+    .In12 (interrupts[12]),
+    .In13 (interrupts[13]),
+    .In14 (interrupts[14]),
+    .In15 (interrupts[15])
+
 );
+
+assign interrupts[1] = 1'b0;
+assign interrupts[2] = 1'b0;
+assign interrupts[3] = 1'b0;
+assign interrupts[4] = 1'b0;
+assign interrupts[5] = 1'b0;
+assign interrupts[6] = 1'b0;
+assign interrupts[7] = 1'b0;
+assign interrupts[8] = 1'b0;
+assign interrupts[9] = 1'b0;
+assign interrupts[10] = 1'b0;
+assign interrupts[11] = 1'b0;
+assign interrupts[12] = 1'b0;
+assign interrupts[13] = 1'b0;
+assign interrupts[14] = 1'b0;
+assign interrupts[15] = 1'b0;
 
 
 
@@ -295,13 +413,57 @@ soc_miner #(.MEMORY_DATA_WIDTH(MEMORY_DATA_WIDTH),
     .s_regs_arvalid(M00_AXI_ARVALID),
     .s_regs_arready(M00_AXI_ARREADY),
     .s_regs_araddr(M00_AXI_ARADDR),
-    .s_regs_arlen(M00_AXI_ARLEN),
-    
+    .s_regs_arlen(M00_AXI_ARLEN),    
     .s_regs_rvalid(M00_AXI_RVALID),
     .s_regs_rlast(M00_AXI_RLAST),
     .s_regs_rready(M00_AXI_RREADY),
     .s_regs_rdata(M00_AXI_RDATA),
-    .s_regs_rresp(M00_AXI_RRESP)
+    .s_regs_rresp(M00_AXI_RRESP),
+    //acp
+    .s_axi_acp_araddr (S_AXI_ACP_ARADDR ),
+    .s_axi_acp_arburst(S_AXI_ACP_ARBURST),
+    .s_axi_acp_arcache(S_AXI_ACP_ARCACHE),
+    .s_axi_acp_arid   (S_AXI_ACP_ARID   ),
+    .s_axi_acp_arlen  (S_AXI_ACP_ARLEN  ),
+    .s_axi_acp_arlock (S_AXI_ACP_ARLOCK ),
+    .s_axi_acp_arprot (S_AXI_ACP_ARPROT ),
+    .s_axi_acp_arqos  (S_AXI_ACP_ARQOS  ),
+    .s_axi_acp_arready(S_AXI_ACP_ARREADY),
+    .s_axi_acp_arsize (S_AXI_ACP_ARSIZE ),
+    .s_axi_acp_aruser (S_AXI_ACP_ARUSER ),
+    .s_axi_acp_arvalid(S_AXI_ACP_ARVALID),
+    .s_axi_acp_awaddr (S_AXI_ACP_AWADDR ),
+    .s_axi_acp_awburst(S_AXI_ACP_AWBURST),
+    .s_axi_acp_awcache(S_AXI_ACP_AWCACHE),
+    .s_axi_acp_awid   (S_AXI_ACP_AWID   ),
+    .s_axi_acp_awlen  (S_AXI_ACP_AWLEN  ),
+    .s_axi_acp_awlock (S_AXI_ACP_AWLOCK ),
+    .s_axi_acp_awprot (S_AXI_ACP_AWPROT ),
+    .s_axi_acp_awqos  (S_AXI_ACP_AWQOS  ),
+    .s_axi_acp_awready(S_AXI_ACP_AWREADY),
+    .s_axi_acp_awsize (S_AXI_ACP_AWSIZE ),
+    .s_axi_acp_awuser (S_AXI_ACP_AWUSER ),
+    .s_axi_acp_awvalid(S_AXI_ACP_AWVALID),
+    .s_axi_acp_bid    (S_AXI_ACP_BID    ),
+    .s_axi_acp_bready (S_AXI_ACP_BREADY ),
+    .s_axi_acp_bresp  (S_AXI_ACP_BRESP  ),
+    .s_axi_acp_bvalid (S_AXI_ACP_BVALID ),
+    .s_axi_acp_rdata  (S_AXI_ACP_RDATA  ),
+    .s_axi_acp_rid    (S_AXI_ACP_RID    ),
+    .s_axi_acp_rlast  (S_AXI_ACP_RLAST  ),
+    .s_axi_acp_rready (S_AXI_ACP_RREADY ),
+    .s_axi_acp_rresp  (S_AXI_ACP_RRESP  ),
+    .s_axi_acp_rvalid (S_AXI_ACP_RVALID ),
+    .s_axi_acp_wdata  (S_AXI_ACP_WDATA  ),
+    .s_axi_acp_wid    (S_AXI_ACP_WID    ),
+    .s_axi_acp_wlast  (S_AXI_ACP_WLAST  ),
+    .s_axi_acp_wready (S_AXI_ACP_WREADY ),
+    .s_axi_acp_wstrb  (S_AXI_ACP_WSTRB  ),
+    .s_axi_acp_wvalid (S_AXI_ACP_WVALID ),
+    
+    .Interrupt        (interrupts[0]    )
+
+    
 
 );
 

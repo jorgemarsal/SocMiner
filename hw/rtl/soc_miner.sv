@@ -85,10 +85,55 @@ module soc_miner #(
     output logic                            s_regs_rlast,                    
     input  logic                            s_regs_rready,                    
     output logic [REGS_DATA_WIDTH-1:0]      s_regs_rdata,    
-    output logic [1:0]                      s_regs_rresp
+    output logic [1:0]                      s_regs_rresp,
+
+    output logic [31:0]s_axi_acp_araddr,
+    output logic [1:0]s_axi_acp_arburst,
+    output logic [3:0]s_axi_acp_arcache,
+    output logic [2:0]s_axi_acp_arid,
+    output logic [3:0]s_axi_acp_arlen,
+    output logic [1:0]s_axi_acp_arlock,
+    output logic [2:0]s_axi_acp_arprot,
+    output logic [3:0]s_axi_acp_arqos,
+    input  logic s_axi_acp_arready,
+    output logic [2:0]s_axi_acp_arsize,
+    output logic [4:0]s_axi_acp_aruser,
+    output logic s_axi_acp_arvalid,
+    output logic [31:0]s_axi_acp_awaddr,
+    output logic [1:0]s_axi_acp_awburst,
+    output logic [3:0]s_axi_acp_awcache,
+    output logic [2:0]s_axi_acp_awid,
+    output logic [3:0]s_axi_acp_awlen,
+    output logic [1:0]s_axi_acp_awlock,
+    output logic [2:0]s_axi_acp_awprot,
+    output logic [3:0]s_axi_acp_awqos,
+    input  logic s_axi_acp_awready,
+    output logic [2:0]s_axi_acp_awsize,
+    output logic [4:0]s_axi_acp_awuser,
+    output logic s_axi_acp_awvalid,
+    input  logic [2:0]s_axi_acp_bid,
+    output logic s_axi_acp_bready,
+    input  logic [1:0]s_axi_acp_bresp,
+    input  logic s_axi_acp_bvalid,
+    input  logic [63:0]s_axi_acp_rdata,
+    input  logic [2:0]s_axi_acp_rid,
+    input  logic s_axi_acp_rlast,
+    output logic s_axi_acp_rready,
+    input  logic [1:0]s_axi_acp_rresp,
+    input  logic s_axi_acp_rvalid,
+    output logic [63:0]s_axi_acp_wdata,
+    output logic [2:0]s_axi_acp_wid,
+    output logic s_axi_acp_wlast,
+    input  logic s_axi_acp_wready,
+    output logic [7:0]s_axi_acp_wstrb,
+    output logic s_axi_acp_wvalid,
+
+    output logic Interrupt
+
 
     );
 
+    
 
 
     /**
@@ -141,45 +186,148 @@ module soc_miner #(
     assign s_regs_rdata = m_axi4lite_if.rdata;
     assign s_regs_rresp = m_axi4lite_if.rresp;
 
+    logic acp_enabled;
 
-    assign    m_memory_awvalid    = m_axi4_if.awvalid   ;
-    assign    m_axi4_if.awready   = m_memory_awready    ;
-    assign    m_memory_awaddr     = m_axi4_if.awaddr    ;
-    assign    m_memory_awlen      = m_axi4_if.awlen     ;
-    assign    m_memory_awid       = m_axi4_if.awid      ;
-    assign    m_memory_awsize     = m_axi4_if.awsize    ;
-    assign    m_memory_awburst    = m_axi4_if.awburst   ;
-    assign    m_memory_awlock     = m_axi4_if.awlock    ;
-    assign    m_memory_awcache    = m_axi4_if.awcache   ;
-    assign    m_memory_awprot     = m_axi4_if.awprot    ;
-    assign    m_memory_awqos      = m_axi4_if.awqos     ;
-    assign    m_memory_wvalid     = m_axi4_if.wvalid    ;
-    assign    m_axi4_if.wready    = m_memory_wready     ;
-    assign    m_memory_wdata      = m_axi4_if.wdata     ;
-    assign    m_memory_wstrb      = m_axi4_if.wstrb     ;
-    assign    m_memory_wlast      = m_axi4_if.wlast     ;
-    assign    m_memory_wid        = m_axi4_if.wid       ;
-    assign    m_axi4_if.bvalid    = m_memory_bvalid     ;
-    assign    m_memory_bready     = m_axi4_if.bready    ;
-    assign    m_axi4_if.bresp     = m_memory_bresp      ;
-    assign    m_axi4_if.bid       = m_memory_bid        ;
-    assign    m_memory_arvalid    = m_axi4_if.arvalid   ;
-    assign    m_axi4_if.arready   = m_memory_arready    ;
-    assign    m_memory_araddr     = m_axi4_if.araddr    ;
-    assign    m_memory_arlen      = m_axi4_if.arlen     ;
-    assign    m_memory_arid       = m_axi4_if.arid      ;
-    assign    m_memory_arsize     = m_axi4_if.arsize    ;
-    assign    m_memory_arburst    = m_axi4_if.arburst   ;
-    assign    m_memory_arlock     = m_axi4_if.arlock    ;
-    assign    m_memory_arcache    = m_axi4_if.arcache   ;
-    assign    m_memory_arprot     = m_axi4_if.arprot    ;
-    assign    m_memory_arqos      = m_axi4_if.arqos     ;
-    assign    m_axi4_if.rvalid    = m_memory_rvalid     ;
-    assign    m_memory_rready     = m_axi4_if.rready    ;
-    assign    m_axi4_if.rdata     = m_memory_rdata      ;
-    assign    m_axi4_if.rlast     = m_memory_rlast      ;
-    assign    m_axi4_if.rresp     = m_memory_rresp      ;
-    assign    m_axi4_if.rid       = m_memory_rid        ;
+    always_comb begin
+        if(acp_enabled) begin
+            s_axi_acp_awvalid    = m_axi4_if.awvalid   ;
+            m_axi4_if.awready    = s_axi_acp_awready   ;
+            s_axi_acp_awaddr     = m_axi4_if.awaddr    ;
+            s_axi_acp_awlen      = m_axi4_if.awlen     ;
+            s_axi_acp_awid       = m_axi4_if.awid      ;
+            s_axi_acp_awsize     = m_axi4_if.awsize    ;
+            s_axi_acp_awburst    = m_axi4_if.awburst   ;
+            s_axi_acp_awlock     = m_axi4_if.awlock    ;
+            s_axi_acp_awcache    = m_axi4_if.awcache   ;
+            s_axi_acp_awprot     = m_axi4_if.awprot    ;
+            s_axi_acp_awqos      = m_axi4_if.awqos     ;
+            s_axi_acp_wvalid     = m_axi4_if.wvalid    ;
+            m_axi4_if.wready     = s_axi_acp_wready    ;
+            s_axi_acp_wdata      = m_axi4_if.wdata     ;
+            s_axi_acp_wstrb      = m_axi4_if.wstrb     ;
+            s_axi_acp_wlast      = m_axi4_if.wlast     ;
+            s_axi_acp_wid        = m_axi4_if.wid       ;
+            m_axi4_if.bvalid     = s_axi_acp_bvalid    ;
+            s_axi_acp_bready     = m_axi4_if.bready    ;
+            m_axi4_if.bresp      = s_axi_acp_bresp     ;
+            m_axi4_if.bid        = s_axi_acp_bid       ;
+            s_axi_acp_arvalid    = m_axi4_if.arvalid   ;
+            m_axi4_if.arready    = s_axi_acp_arready   ;
+            s_axi_acp_araddr     = m_axi4_if.araddr    ;
+            s_axi_acp_arlen      = m_axi4_if.arlen     ;
+            s_axi_acp_arid       = m_axi4_if.arid      ;
+            s_axi_acp_arsize     = m_axi4_if.arsize    ;
+            s_axi_acp_arburst    = m_axi4_if.arburst   ;
+            s_axi_acp_arlock     = m_axi4_if.arlock    ;
+            s_axi_acp_arcache    = m_axi4_if.arcache   ;
+            s_axi_acp_arprot     = m_axi4_if.arprot    ;
+            s_axi_acp_arqos      = m_axi4_if.arqos     ;
+            m_axi4_if.rvalid     = s_axi_acp_rvalid    ;
+            s_axi_acp_rready     = m_axi4_if.rready    ;
+            m_axi4_if.rdata      = s_axi_acp_rdata     ;
+            m_axi4_if.rlast      = s_axi_acp_rlast     ;
+            m_axi4_if.rresp      = s_axi_acp_rresp     ;
+            m_axi4_if.rid        = s_axi_acp_rid       ;
+            //disable non-acp
+            m_memory_awvalid    = 'h0;
+            m_memory_awaddr     = 'h0;
+            m_memory_awlen      = 'h0;
+            m_memory_awid       = 'h0;
+            m_memory_awsize     = 'h0;
+            m_memory_awburst    = 'h0;
+            m_memory_awlock     = 'h0;
+            m_memory_awcache    = 'h0;
+            m_memory_awprot     = 'h0;
+            m_memory_awqos      = 'h0;
+            m_memory_wvalid     = 'h0;
+            m_memory_wdata      = 'h0;
+            m_memory_wstrb      = 'h0;
+            m_memory_wlast      = 'h0;
+            m_memory_wid        = 'h0;
+            m_memory_bready     = 'h0;
+            m_memory_arvalid    = 'h0;
+            m_memory_araddr     = 'h0;
+            m_memory_arlen      = 'h0;
+            m_memory_arid       = 'h0;
+            m_memory_arsize     = 'h0;
+            m_memory_arburst    = 'h0;
+            m_memory_arlock     = 'h0;
+            m_memory_arcache    = 'h0;
+            m_memory_arprot     = 'h0;
+            m_memory_arqos      = 'h0;
+            m_memory_rready     = 'h0;
+
+        end
+        else begin
+            m_memory_awvalid    = m_axi4_if.awvalid   ;
+            m_axi4_if.awready   = m_memory_awready    ;
+            m_memory_awaddr     = m_axi4_if.awaddr    ;
+            m_memory_awlen      = m_axi4_if.awlen     ;
+            m_memory_awid       = m_axi4_if.awid      ;
+            m_memory_awsize     = m_axi4_if.awsize    ;
+            m_memory_awburst    = m_axi4_if.awburst   ;
+            m_memory_awlock     = m_axi4_if.awlock    ;
+            m_memory_awcache    = m_axi4_if.awcache   ;
+            m_memory_awprot     = m_axi4_if.awprot    ;
+            m_memory_awqos      = m_axi4_if.awqos     ;
+            m_memory_wvalid     = m_axi4_if.wvalid    ;
+            m_axi4_if.wready    = m_memory_wready     ;
+            m_memory_wdata      = m_axi4_if.wdata     ;
+            m_memory_wstrb      = m_axi4_if.wstrb     ;
+            m_memory_wlast      = m_axi4_if.wlast     ;
+            m_memory_wid        = m_axi4_if.wid       ;
+            m_axi4_if.bvalid    = m_memory_bvalid     ;
+            m_memory_bready     = m_axi4_if.bready    ;
+            m_axi4_if.bresp     = m_memory_bresp      ;
+            m_axi4_if.bid       = m_memory_bid        ;
+            m_memory_arvalid    = m_axi4_if.arvalid   ;
+            m_axi4_if.arready   = m_memory_arready    ;
+            m_memory_araddr     = m_axi4_if.araddr    ;
+            m_memory_arlen      = m_axi4_if.arlen     ;
+            m_memory_arid       = m_axi4_if.arid      ;
+            m_memory_arsize     = m_axi4_if.arsize    ;
+            m_memory_arburst    = m_axi4_if.arburst   ;
+            m_memory_arlock     = m_axi4_if.arlock    ;
+            m_memory_arcache    = m_axi4_if.arcache   ;
+            m_memory_arprot     = m_axi4_if.arprot    ;
+            m_memory_arqos      = m_axi4_if.arqos     ;
+            m_axi4_if.rvalid    = m_memory_rvalid     ;
+            m_memory_rready     = m_axi4_if.rready    ;
+            m_axi4_if.rdata     = m_memory_rdata      ;
+            m_axi4_if.rlast     = m_memory_rlast      ;
+            m_axi4_if.rresp     = m_memory_rresp      ;
+            m_axi4_if.rid       = m_memory_rid        ;
+
+            //disable acp
+            s_axi_acp_awvalid    = 'h0;
+            s_axi_acp_awaddr     = 'h0;
+            s_axi_acp_awlen      = 'h0;
+            s_axi_acp_awid       = 'h0;
+            s_axi_acp_awsize     = 'h0;
+            s_axi_acp_awburst    = 'h0;
+            s_axi_acp_awlock     = 'h0;
+            s_axi_acp_awcache    = 'h0;
+            s_axi_acp_awprot     = 'h0;
+            s_axi_acp_awqos      = 'h0;
+            s_axi_acp_wvalid     = 'h0;
+            s_axi_acp_wdata      = 'h0;
+            s_axi_acp_wstrb      = 'h0;
+            s_axi_acp_wlast      = 'h0;
+            s_axi_acp_wid        = 'h0;
+            s_axi_acp_bready     = 'h0;
+            s_axi_acp_arvalid    = 'h0;
+            s_axi_acp_araddr     = 'h0;
+            s_axi_acp_arlen      = 'h0;
+            s_axi_acp_arid       = 'h0;
+            s_axi_acp_arsize     = 'h0;
+            s_axi_acp_arburst    = 'h0;
+            s_axi_acp_arlock     = 'h0;
+            s_axi_acp_arcache    = 'h0;
+            s_axi_acp_arprot     = 'h0;
+            s_axi_acp_arqos      = 'h0;
+            s_axi_acp_rready     = 'h0;
+        end
+    end
 
     
 
@@ -192,6 +340,10 @@ module soc_miner #(
 (* mark_debug = "true" *)    logic go_read_next;
 (* mark_debug = "true" *)    logic go_write;      //start block operation
 (* mark_debug = "true" *)    logic go_write_next;
+(* mark_debug = "true" *)    logic go_read_acp;      //start block operation
+(* mark_debug = "true" *)    logic go_read_acp_next;
+(* mark_debug = "true" *)    logic go_write_acp;      //start block operation
+(* mark_debug = "true" *)    logic go_write_acp_next;
 
 (* mark_debug = "true" *)    logic [29:0] source_address;      //pointer to source data in dram (aligned to 4bytes)
 (* mark_debug = "true" *)    logic [29:0] destination_address; //pointer to destination data in dram (aligned to 4bytes)
@@ -226,8 +378,9 @@ module soc_miner #(
         .m_axi4_if                  (m_axi4_if                 ),
         .debug_mem_wr_read_sram_if  (debug_mem_wr_read_sram_if ),
         //.debug_mem_wr_write_sram_if        (debug_mem_wr_write_sram_if       ),
-        .debug_mem_rd_read_sram_if  (debug_mem_rd_read_sram_if )
+        .debug_mem_rd_read_sram_if  (debug_mem_rd_read_sram_if ),
         //.debug_mem_rd_write_sram_if        (debug_mem_rd_write_sram_if       )
+        .Interrupt (Interrupt)
     );
     /**
      * Auto clear. When sw writes a 1 to this field
@@ -278,11 +431,15 @@ module soc_miner #(
         .RegBus_address             (m_regbus_if.reg_addr[31:2]),
         .control_go_read_next            (go_read_next),
         .control_go_write_next            (go_write_next),
+        .control_go_read_acp_next            (go_read_acp_next),
+        .control_go_write_acp_next            (go_write_acp_next),
                                     
         .RegBus_read_data           (m_regbus_if.reg_rdata),
         .RegBus_access_complete     (m_regbus_if.reg_ready),
         .control_go_read                 (go_read),
         .control_go_write                 (go_write),
+        .control_go_read_acp                 (go_read_acp),
+        .control_go_write_acp                 (go_write_acp),
         .source_address_address     (source_address),
         .destination_address_address(destination_address),
         .length_length              (length),
@@ -305,7 +462,9 @@ module soc_miner #(
         .debug_regs_wr_sram_read            (debug_regs_wr_read_sram_if.rdEn),
         .debug_regs_wr_sram_address         (debug_regs_wr_read_sram_if.rdAddr[31:2]),
         .debug_regs_rd_sram_read            (debug_regs_rd_read_sram_if.rdEn),
-        .debug_regs_rd_sram_address         (debug_regs_rd_read_sram_if.rdAddr[31:2])
+        .debug_regs_rd_sram_address         (debug_regs_rd_read_sram_if.rdAddr[31:2]),
+
+        .acp_acp_en (acp_enabled)
 
     );
 

@@ -3,6 +3,7 @@
 module axi_tb;
 
     logic clk, rst_n;
+    logic [15:0] interrupts;
 
     localparam MEMORY_DATA_WIDTH = 64;
     localparam MEMORY_ADDR_WIDTH = 32;
@@ -16,6 +17,11 @@ module axi_tb;
           .ADDR_WIDTH(MEMORY_ADDR_WIDTH),
           .BUS_LEN_WIDTH(MEMORY_BUS_LEN_WIDTH),
           .ID_WIDTH(MEMORY_ID_WIDTH)) m_axi4_if(clk, rst_n);
+    axi4_if #(.DATA_WIDTH(MEMORY_DATA_WIDTH),
+          .ADDR_WIDTH(MEMORY_ADDR_WIDTH),
+          .BUS_LEN_WIDTH(MEMORY_BUS_LEN_WIDTH),
+          .ID_WIDTH(MEMORY_ID_WIDTH)) m_axi4_acp_if(clk, rst_n);
+
     axi4lite_if #(.DATA_WIDTH(REGS_DATA_WIDTH),
               .ADDR_WIDTH(REGS_ADDR_WIDTH)) m_axi4lite_if(clk, rst_n);
 
@@ -87,7 +93,49 @@ module axi_tb;
         .s_regs_rready(m_axi4lite_if.rready),
         .s_regs_rlast(m_axi4lite_if.rlast),
         .s_regs_rdata(m_axi4lite_if.rdata),
-        .s_regs_rresp(m_axi4lite_if.rresp)
+        .s_regs_rresp(m_axi4lite_if.rresp),
+        //acp
+        .s_axi_acp_araddr (m_axi4_acp_if.araddr ),
+        .s_axi_acp_arburst(m_axi4_acp_if.arburst),
+        .s_axi_acp_arcache(m_axi4_acp_if.arcache),
+        .s_axi_acp_arid   (m_axi4_acp_if.arid   ),
+        .s_axi_acp_arlen  (m_axi4_acp_if.arlen  ),
+        .s_axi_acp_arlock (m_axi4_acp_if.arlock ),
+        .s_axi_acp_arprot (m_axi4_acp_if.arprot ),
+        .s_axi_acp_arqos  (m_axi4_acp_if.arqos  ),
+        .s_axi_acp_arready(m_axi4_acp_if.arready),
+        .s_axi_acp_arsize (m_axi4_acp_if.arsize ),
+        .s_axi_acp_aruser (m_axi4_acp_if.aruser ),
+        .s_axi_acp_arvalid(m_axi4_acp_if.arvalid),
+        .s_axi_acp_awaddr (m_axi4_acp_if.awaddr ),
+        .s_axi_acp_awburst(m_axi4_acp_if.awburst),
+        .s_axi_acp_awcache(m_axi4_acp_if.awcache),
+        .s_axi_acp_awid   (m_axi4_acp_if.awid   ),
+        .s_axi_acp_awlen  (m_axi4_acp_if.awlen  ),
+        .s_axi_acp_awlock (m_axi4_acp_if.awlock ),
+        .s_axi_acp_awprot (m_axi4_acp_if.awprot ),
+        .s_axi_acp_awqos  (m_axi4_acp_if.awqos  ),
+        .s_axi_acp_awready(m_axi4_acp_if.awready),
+        .s_axi_acp_awsize (m_axi4_acp_if.awsize ),
+        .s_axi_acp_awuser (m_axi4_acp_if.awuser ),
+        .s_axi_acp_awvalid(m_axi4_acp_if.awvalid),
+        .s_axi_acp_bid    (m_axi4_acp_if.bid    ),
+        .s_axi_acp_bready (m_axi4_acp_if.bready ),
+        .s_axi_acp_bresp  (m_axi4_acp_if.bresp  ),
+        .s_axi_acp_bvalid (m_axi4_acp_if.bvalid ),
+        .s_axi_acp_rdata  (m_axi4_acp_if.rdata  ),
+        .s_axi_acp_rid    (m_axi4_acp_if.rid    ),
+        .s_axi_acp_rlast  (m_axi4_acp_if.rlast  ),
+        .s_axi_acp_rready (m_axi4_acp_if.rready ),
+        .s_axi_acp_rresp  (m_axi4_acp_if.rresp  ),
+        .s_axi_acp_rvalid (m_axi4_acp_if.rvalid ),
+        .s_axi_acp_wdata  (m_axi4_acp_if.wdata  ),
+        .s_axi_acp_wid    (m_axi4_acp_if.wid    ),
+        .s_axi_acp_wlast  (m_axi4_acp_if.wlast  ),
+        .s_axi_acp_wready (m_axi4_acp_if.wready ),
+        .s_axi_acp_wstrb  (m_axi4_acp_if.wstrb  ),
+        .s_axi_acp_wvalid (m_axi4_acp_if.wvalid ),
+        .Interrupt(interrupts[0])
     );
 
     axi_target_fm 
@@ -150,6 +198,66 @@ module axi_tb;
               .bready             (m_axi4_if.bready      )
              );
 
+        axi_target_fm 
+        #(
+          .MEM_SIZE        (16384 * 4),
+          .DATA_WIDTH      (MEMORY_DATA_WIDTH),
+          .ADDR_WIDTH      (MEMORY_ADDR_WIDTH),
+          .MAX_LATENCY     (32),
+          .MEM_DEPTH       (256),
+          .LEN_WIDTH       (4),
+          .ID_WIDTH        (6),
+          .RESP_WIDTH      (2),
+          .SIZE_WIDTH      (3),
+          .BURST_WIDTH     (2),
+          .STRB_WIDTH      (MEMORY_DATA_WIDTH/8)
+          ) I_DRAM_CONTROLLER_ACP
+              (
+               .aclk              (clk                   ),
+               .aresetn           (rst_n                 ),
+
+               .awvalid           (m_axi4_acp_if.awvalid     ),
+               .awaddr            (m_axi4_acp_if.awaddr      ),
+               .awlen             (m_axi4_acp_if.awlen       ),
+               .awsize            (m_axi4_acp_if.awsize      ),
+               .awburst           (m_axi4_acp_if.awburst     ),
+               .awlock            (m_axi4_acp_if.awlock      ),
+               .awcache           (m_axi4_acp_if.awcache     ),
+               .awprot            (m_axi4_acp_if.awprot      ),
+               .awid              (m_axi4_acp_if.awid        ),
+               .awready           (m_axi4_acp_if.awready     ),
+                                          
+               .arvalid           (m_axi4_acp_if.arvalid     ),
+               .araddr            (m_axi4_acp_if.araddr      ),
+               .arlen             (m_axi4_acp_if.arlen       ),
+               .arsize            (m_axi4_acp_if.arsize      ),
+               .arburst           (m_axi4_acp_if.arburst     ),
+               .arlock            (m_axi4_acp_if.arlock      ),
+               .arcache           (m_axi4_acp_if.arcache     ),
+               .arprot            (m_axi4_acp_if.arprot      ),
+               .arid              (m_axi4_acp_if.arid        ),
+               .arready           (m_axi4_acp_if.arready     ),
+                                          
+               .rvalid            (m_axi4_acp_if.rvalid      ),
+               .rlast             (m_axi4_acp_if.rlast       ),
+               .rdata             (m_axi4_acp_if.rdata       ),
+               .rresp             (m_axi4_acp_if.rresp       ),
+               .rid               (m_axi4_acp_if.rid         ),
+               .rready            (m_axi4_acp_if.rready      ),
+                                          
+               .wvalid            (m_axi4_acp_if.wvalid      ),
+               .wlast             (m_axi4_acp_if.wlast       ),
+               .wdata             (m_axi4_acp_if.wdata       ),
+               .wstrb             (m_axi4_acp_if.wstrb       ),
+               .wid               (m_axi4_acp_if.wid         ),
+               .wready            (m_axi4_acp_if.wready      ),
+                                          
+               .bvalid            (m_axi4_acp_if.bvalid      ),
+               .bresp             (m_axi4_acp_if.bresp       ),
+               .bid               (m_axi4_acp_if.bid         ),
+              .bready             (m_axi4_acp_if.bready      )
+             );
+
     localparam DEBUG_MEM_WRITES_SRAM = 'h1000;
     localparam DEBUG_MEM_READS_SRAM = 'h1400;
     localparam DEBUG_REGS_WRITES_SRAM = 'h1800;
@@ -208,8 +316,10 @@ module axi_tb;
         end
         $display("data: %h", data);
         m_axi_driver.write('h0, 'h1); //go write!
+        @(posedge interrupts[0]);
         #1000ns;
         m_axi_driver.write('h0, 'h10); //go read!
+        @(posedge interrupts[0]);
         #1000ns;
         $display("simple read data: %h", I_SOC_MINER.I_SIMPLE_MEMORY_ACCESS.read_data);
         if(I_SOC_MINER.I_SIMPLE_MEMORY_ACCESS.read_data != {32'hbabeface, 32'h01234567}) begin
@@ -244,9 +354,20 @@ module axi_tb;
             $display("@%h -> data: %h", 'h400+i*4, data);
         end
 
+        //ACP test
 
-
+        m_axi_driver.write('h14, 'h1); //enable acp
+        m_axi_driver.read('h14, data);
+        if(data != ('h1 & 'hffffffff)) begin
+            $fatal("expected: %h got: %h", 'h1, data);
+        end
+        m_axi_driver.write('h0, 'h1); //go write acp!
+        @(posedge interrupts[0]);
         #1000ns;
+        m_axi_driver.write('h0, 'h10); //go read acp!
+        @(posedge interrupts[0]);
+        #1000ns;
+
         $finish(0);
 
     end

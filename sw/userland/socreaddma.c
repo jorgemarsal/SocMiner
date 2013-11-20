@@ -50,6 +50,13 @@ int main(int argc, char *argv[])
     for(i=0; i < 8; i++) buffer[i] = 0xff;
     //PreciseTimer timer;
     res = socDmaRead(fileDesc_, 0,address,size, buffer,0);
+    if(res)
+    {
+        printf("error in socdmaread\n");
+        if (fileDesc_) close(fileDesc_);
+        return res;
+    }
+    
     //res = 0;
     //double seconds = timer.elapsed();
     //printf("dma -> %f Mbytes/s\n", size/seconds/1024.0/1024.0);

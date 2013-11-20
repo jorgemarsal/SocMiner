@@ -25,8 +25,8 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
         logic [3:0]                 awcache  ;
         logic [2:0]                 awprot   ;  
         logic [3:0]                 awqos    ;  
-        //logic [3:0]                 awuser   ;  
-        //logic [3:0]                 awregion ;
+        logic [4:0]                 awuser   ;  
+        logic [3:0]                 awregion ;
 
         logic                       wvalid   ;
         logic                       wready   ;
@@ -51,8 +51,8 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
         logic [3:0]                 arcache  ;
         logic [2:0]                 arprot   ; 
         logic [3:0]                 arqos   ; 
-        //logic [3:0]                 aruser   ;  
-        //logic [3:0]                 arregion ;
+        logic [4:0]                 aruser   ;  
+        logic [3:0]                 arregion ;
 
         logic                       rvalid     ;    
         logic                       rready     ;     
@@ -75,6 +75,8 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
                 output   awcache , 
                 output   awprot  ,
                 output   awqos   ,
+                output   awuser  ,
+                output   awregion,
                 output   wvalid  ,
                 input    wready  ,
                 output   wdata   ,
@@ -96,6 +98,8 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
                 output   arcache ,
                 output   arprot  ,
                 output   arqos   ,
+                output   aruser  ,
+                output   arregion,
                 input    rvalid  ,
                 output   rready  ,
                 input    rdata   ,
@@ -116,6 +120,8 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
                 input    awcache , 
                 input    awprot  ,
                 input    awqos   ,
+                input    awuser  ,
+                input    awregion,
                 input    wvalid  ,
                 output   wready  ,
                 input    wdata   ,
@@ -137,6 +143,8 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
                 input    arcache ,
                 input    arprot  ,
                 input    arqos   ,
+                input    aruser  ,
+                input    arregion,
                 output   rvalid  ,
                 input    rready  ,
                 output   rdata   ,
@@ -157,6 +165,8 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
                 input    awcache , 
                 input    awprot  ,
                 input    awqos   ,
+                input    awuser  ,
+                input    awregion,
                 input    wvalid  ,
                 input    wready  ,
                 input    wdata   ,
@@ -178,6 +188,8 @@ interface axi4_if #(parameter ADDR_WIDTH=32,
                 input    arcache ,
                 input    arprot  ,
                 input    arqos   ,
+                input    aruser  ,
+                input    arregion,
                 input    rvalid  ,
                 input    rready  ,
                 input    rdata   ,
